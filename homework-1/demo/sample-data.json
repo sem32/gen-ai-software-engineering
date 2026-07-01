@@ -1,0 +1,34 @@
+[
+  {
+    "fromAccount": null,
+    "toAccount": "ACC-12345",
+    "amount": 1000.00,
+    "currency": "USD",
+    "type": "deposit",
+    "timestamp": "2024-01-05T09:00:00Z"
+  },
+  {
+    "fromAccount": "ACC-12345",
+    "toAccount": "ACC-67890",
+    "amount": 100.50,
+    "currency": "USD",
+    "type": "transfer",
+    "timestamp": "2024-01-10T12:30:00Z"
+  },
+  {
+    "fromAccount": "ACC-12345",
+    "toAccount": null,
+    "amount": 250.75,
+    "currency": "USD",
+    "type": "withdrawal",
+    "timestamp": "2024-01-20T15:45:00Z"
+  },
+  {
+    "fromAccount": null,
+    "toAccount": "ACC-67890",
+    "amount": 500.00,
+    "currency": "EUR",
+    "type": "deposit",
+    "timestamp": "2024-02-01T08:00:00Z"
+  }
+]
