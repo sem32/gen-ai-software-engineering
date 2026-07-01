@@ -1,0 +1,75 @@
+### Banking Transactions API — sample requests
+### Use with the VS Code "REST Client" extension (send each request with "Send Request").
+
+@base = http://localhost:3000
+
+### Create a deposit
+POST {{base}}/transactions
+Content-Type: application/json
+
+{
+  "toAccount": "ACC-12345",
+  "amount": 1000.00,
+  "currency": "USD",
+  "type": "deposit",
+  "timestamp": "2024-01-05T09:00:00Z"
+}
+
+### Create a transfer
+POST {{base}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-12345",
+  "toAccount": "ACC-67890",
+  "amount": 100.50,
+  "currency": "USD",
+  "type": "transfer"
+}
+
+### Create a withdrawal
+POST {{base}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-12345",
+  "amount": 250.75,
+  "currency": "USD",
+  "type": "withdrawal"
+}
+
+### Validation error example (negative amount + invalid currency) -> 400
+POST {{base}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-12345",
+  "toAccount": "ACC-67890",
+  "amount": -5,
+  "currency": "XYZ",
+  "type": "transfer"
+}
+
+### List all transactions
+GET {{base}}/transactions
+
+### Filter by account
+GET {{base}}/transactions?accountId=ACC-12345
+
+### Filter by type + date range
+GET {{base}}/transactions?type=transfer&from=2024-01-01&to=2024-01-31
+
+### Get one transaction (replace with a real id from the list response)
+GET {{base}}/transactions/REPLACE_WITH_ID
+
+### Account balance
+GET {{base}}/accounts/ACC-12345/balance
+
+### Account summary (Task 4A)
+GET {{base}}/accounts/ACC-12345/summary
+
+### Simple interest (Task 4B)
+GET {{base}}/accounts/ACC-12345/interest?rate=0.05&days=30
+
+### CSV export (Task 4C)
+GET {{base}}/transactions/export?format=csv

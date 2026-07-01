@@ -1,0 +1,9 @@
+# Minimum versions; newer releases are installed so that prebuilt wheels for
+# recent Python versions (3.13/3.14) are available and no Rust toolchain is
+# needed to build pydantic-core from source.
+fastapi>=0.115
+uvicorn[standard]>=0.34
+pydantic>=2.10
+httpx>=0.28
+pytest>=8.3
+pytest-cov>=6.0
