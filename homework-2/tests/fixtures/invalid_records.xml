@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>CUST-9001</customer_id>
+    <customer_email>valid.user@example.com</customer_email>
+    <customer_name>Valid User</customer_name>
+    <subject>A perfectly valid ticket</subject>
+    <description>This description is comfortably longer than ten characters.</description>
+    <category>technical_issue</category>
+    <priority>high</priority>
+    <status>new</status>
+    <tags>
+      <tag>alpha</tag>
+      <tag>beta</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Chrome</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-9002</customer_id>
+    <customer_email>this-is-not-an-email</customer_email>
+    <customer_name>Broken Email</customer_name>
+    <subject>Ticket with an invalid email address</subject>
+    <description>This description is long enough but the email above is invalid.</description>
+    <category>bug_report</category>
+    <priority>medium</priority>
+    <status>new</status>
+  </ticket>
+</tickets>

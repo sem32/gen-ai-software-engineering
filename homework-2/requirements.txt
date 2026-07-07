@@ -1,0 +1,9 @@
+fastapi>=0.115
+uvicorn[standard]>=0.34
+python-multipart>=0.0.12
+pydantic>=2.10
+pydantic[email]>=2.10
+email-validator>=2.2
+httpx>=0.28
+pytest>=8.3
+pytest-cov>=6.0

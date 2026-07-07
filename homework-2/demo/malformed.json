@@ -1,0 +1,6 @@
+[
+  {"customer_id":"CUST-6001","customer_email":"iris.brown@example.com","customer_name":"Iris Brown","subject":"Test ticket","description":"This is a test ticket with a valid description"},
+  {"customer_id":"CUST-6002","customer_email":"jack.wilson@test.com","customer_name":"Jack Wilson","subject":"Another ticket","description":"This ticket is incomplete and breaks the structure
+  "invalid":  "unclosed brace and missing comma
+]
+This is broken JSON that will not parse

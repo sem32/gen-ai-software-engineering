@@ -1,0 +1,6 @@
+customer_id,customer_email,customer_name,subject,description,category,priority,status,assigned_to,tags,source,browser,device_type
+CUST-4001,not-a-valid-email,Alice Test,Cannot login,Short,account_access,high,new,John Smith,login,web_form,Chrome,desktop
+CUST-4002,bob.test@example.com,Bob Test,,Description that is valid and long enough for testing purposes but the subject is empty,account_access,medium,new,,testing;empty-subject,email,Safari,desktop
+CUST-4003,carol.test@company.net,Carol Test,Feature request,Too,invalid_category,low,new,Sarah Johnson,feature,web_form,Firefox,desktop
+CUST-4004,dave@test.io,Dave Test,Cannot access account,This is a valid description that is longer than 10 characters,account_access,urgent,resolved,Mike Chen,access,api,Chrome,desktop
+CUST-4005,eve.test@domain.com,Eve Test,Payment issue,Valid description
