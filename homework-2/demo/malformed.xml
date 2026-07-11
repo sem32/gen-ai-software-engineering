@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>CUST-7001</customer_id>
+    <customer_email>kevin.harris@example.com</customer_email>
+    <customer_name>Kevin Harris
+    <subject>Unclosed tag above</subject>
+    <description>This ticket has an unclosed customer_name tag which breaks XML parsing</description>
+    <category>account_access</category>
+    <priority>high</priority>
+    <status>new
+    <assigned_to>John Smith</assigned_to>
+    <tags>
+      <tag>error</tag>
+    </tags>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-7002</customer_id>
+    <customer_email>laura.smith@test.com</customer_email>
+    <customer_name>Laura Smith</customer_name>
+    <subject>Missing closing tag</subject>
+    <description>This ticket is missing a closing status tag and has other malformations
+    <assigned_to>Sarah Johnson</assigned_to>
+    <tags>
+      <tag>malformed</tag
+    </tags>
+  </ticket>
+</tickets>
+This text after closing root element is invalid XML
