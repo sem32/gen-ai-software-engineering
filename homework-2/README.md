@@ -1,5 +1,9 @@
 # Customer Support Ticket Management System
 
+> **Author / Student Name**: Semen Darienko
+> **Homework**: 2 — Intelligent Customer Support System
+> **AI Tools Used**: Claude Code — multi-agent, multi-model workflow (Opus / Sonnet / Haiku)
+
 A lightweight REST API for managing customer support tickets, built with **FastAPI** and an **in-memory data store** (no database required). It supports full CRUD operations, multi-format bulk import, and keyword-based automatic ticket classification.
 
 ## Overview & Features

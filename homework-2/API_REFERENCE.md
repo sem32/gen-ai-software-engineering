@@ -1,5 +1,7 @@
 # Customer Support Ticket API Reference
 
+> **Author**: Semen Darienko
+
 ## Overview
 
 The Customer Support Ticket API provides endpoints to manage support tickets, including creation, retrieval, updates, and automatic classification using AI. All timestamps are in ISO 8601 format, and ticket IDs are UUIDs.

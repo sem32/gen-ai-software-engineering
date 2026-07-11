@@ -1,5 +1,7 @@
 # Customer Support Ticket API — How to Run
 
+> **Author**: Semen Darienko
+
 ## 1. Prerequisites
 
 - **Python 3.10+** (developed on 3.14)

@@ -1,5 +1,7 @@
 # Customer Support Ticket API — Architecture
 
+> **Author**: Semen Darienko
+>
 > Audience: technical leads. This document describes the structure, data flows,
 > and design rationale of the Customer Support Ticket API.
 

@@ -1,5 +1,7 @@
 # Testing Guide — Customer Support Ticket API
 
+> **Author**: Semen Darienko
+
 Audience: QA engineers verifying, extending, or triaging the automated test
 suite for the Customer Support Ticket API.
 
