@@ -1,6 +1,6 @@
 # Customer Support Ticket API — How to Run
 
-> **Author**: Semen Darienko
+> **Author**: Simon Darienko
 
 ## 1. Prerequisites
 

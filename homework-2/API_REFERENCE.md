@@ -1,6 +1,6 @@
 # Customer Support Ticket API Reference
 
-> **Author**: Semen Darienko
+> **Author**: Simon Darienko
 
 ## Overview
 

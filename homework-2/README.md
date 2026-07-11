@@ -1,6 +1,6 @@
 # Customer Support Ticket Management System
 
-> **Author / Student Name**: Semen Darienko
+> **Author / Student Name**: Simon Darienko
 > **Homework**: 2 — Intelligent Customer Support System
 > **AI Tools Used**: Claude Code — multi-agent, multi-model workflow (Opus / Sonnet / Haiku)
 
@@ -149,6 +149,6 @@ For deeper detail, see the companion documents in this folder:
 
 ## Author
 
-**Author: Semen Darienko**
+**Author: Simon Darienko**
 
 **AI tools:** Claude Code — built with a multi-agent workflow using different models per task (Opus / Sonnet / Haiku).
