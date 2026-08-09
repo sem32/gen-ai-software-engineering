@@ -1,0 +1,22 @@
+$ python3 -m pytest -v | tail -30
+
+============================= test session starts ==============================
+platform darwin -- Python 3.14.2, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/sem/git/education/gen-ai-software-engineering/homework-4
+configfile: pytest.ini
+testpaths: tests
+collected 49 items
+
+tests/test_auth_fixes.py ........                                        [ 16%]
+tests/test_cli.py ......                                                 [ 28%]
+tests/test_models.py ........                                            [ 44%]
+tests/test_stats.py ........                                             [ 61%]
+tests/test_stats_fixes.py ...                                            [ 67%]
+tests/test_storage.py ..........                                         [ 87%]
+tests/test_storage_fixes.py ......                                       [100%]
+
+============================== 49 passed in 0.12s ==============================
+
+$ python3 -m pytest tests/test_auth_fixes.py    # generated file in isolation (FIRST: Independent)
+........                                                                 [100%]
+8 passed in 0.02s

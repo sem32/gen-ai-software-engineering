@@ -1,0 +1,17 @@
+# Independent check: the generated tests are real regression tests.
+# Same tests, run against the PRE-FIX snapshot of src/ (before the bug-fixer touched it):
+
+$ python3 -m pytest tests/test_auth_fixes.py tests/test_stats_fixes.py tests/test_storage_fixes.py
+tests/test_storage_fixes.py:66: Failed
+=========================== short test summary info ============================
+FAILED tests/test_auth_fixes.py::test_expected_token_raises_when_env_var_unset
+FAILED tests/test_auth_fixes.py::test_expected_token_raises_when_env_var_is_empty_string
+FAILED tests/test_auth_fixes.py::test_require_admin_rejection_message_does_not_echo_supplied_token
+FAILED tests/test_auth_fixes.py::test_verify_admin_token_with_none_raises_when_no_token_configured
+FAILED tests/test_stats_fixes.py::test_average_completion_days_with_no_completed_tasks_returns_zero
+FAILED tests/test_stats_fixes.py::test_average_completion_days_of_empty_collection_is_zero
+FAILED tests/test_storage_fixes.py::test_sort_by_priority_orders_by_severity_not_alphabetically
+FAILED tests/test_storage_fixes.py::test_sort_by_priority_breaks_ties_by_created_at_then_id
+FAILED tests/test_storage_fixes.py::test_export_rejects_dot_dot_traversal_and_writes_nothing
+FAILED tests/test_storage_fixes.py::test_export_rejects_absolute_path_escape
+10 failed, 7 passed in 0.27s

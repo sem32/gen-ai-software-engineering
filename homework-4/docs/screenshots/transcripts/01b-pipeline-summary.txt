@@ -1,0 +1,14 @@
+.................................................                        [100%]
+49 passed in 0.10s
+────────────────────────────────────────────────────────────────────────────
+Pipeline summary (run 20260810-002935)
+  #  agent                  model              status    time   cost
+  01 bug-researcher         claude-sonnet-5    OK        157s   $0.5570
+  02 research-verifier      claude-opus-5      OK        300s   $1.5391
+  03 bug-planner            claude-opus-5      OK        204s   $1.0337
+  04 bug-fixer              claude-sonnet-5    OK        105s   $0.7181
+  05 security-verifier      claude-opus-5      OK        369s   $1.3832
+  06 unit-test-generator    claude-sonnet-5    OK        245s   $0.8312
+run summary written to artifacts/pipeline-run.md
+────────────────────────────────────────────────────────────────────────────
+✓ pipeline finished — artifacts in context/bugs/BUG-001/, logs in artifacts/logs/20260810-002935/

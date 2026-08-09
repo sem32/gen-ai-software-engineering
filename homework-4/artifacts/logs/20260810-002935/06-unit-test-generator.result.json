@@ -1,0 +1,77 @@
+{
+  "is_error": false,
+  "duration_api_ms": 240399,
+  "num_turns": 22,
+  "stop_reason": "end_turn",
+  "session_id": "c0c3f864-f73d-46f1-a33e-740e3c639dac",
+  "total_cost_usd": 0.8312331,
+  "usage": {
+    "input_tokens": 28,
+    "cache_creation_input_tokens": 47545,
+    "cache_read_input_tokens": 604687,
+    "output_tokens": 24242,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 47545,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 551,
+        "cache_read_input_tokens": 59558,
+        "cache_creation_input_tokens": 5687,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5687
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 748,
+      "outputTokens": 19,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000843,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty"
+    },
+    "claude-sonnet-5": {
+      "inputTokens": 28,
+      "outputTokens": 24242,
+      "cacheReadInputTokens": 604687,
+      "cacheCreationInputTokens": 47545,
+      "webSearchRequests": 0,
+      "costUSD": 0.8303901,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "canonicalModel": "claude-sonnet-5",
+      "provider": "firstParty"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "## \u0418\u0442\u043e\u0433\n\n\u0421\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u043b \u044e\u043d\u0438\u0442-\u0442\u0435\u0441\u0442\u044b \u0434\u043b\u044f \u0432\u0441\u0435\u0445 \u0444\u0443\u043d\u043a\u0446\u0438\u0439, \u0438\u0437\u043c\u0435\u043d\u0451\u043d\u043d\u044b\u0445 \u0432 BUG-001, \u0441\u043e\u0433\u043b\u0430\u0441\u043d\u043e \u0441\u043a\u0438\u043b\u043b\u0443 `unit-tests-FIRST`:\n\n- **`tests/test_stats_fixes.py`** (3 \u0442\u0435\u0441\u0442\u0430) \u2014 `average_completion_days` (S1: `ZeroDivisionError` \u2192 `0.0`)\n- **`tests/test_storage_fixes.py`** (6 \u0442\u0435\u0441\u0442\u043e\u0432) \u2014 `list_tasks` sort by priority (S2) \u0438 `export_report` path traversal (S3.2/F4)\n- **`tests/test_auth_fixes.py`** (8 \u0442\u0435\u0441\u0442\u043e\u0432) \u2014 `expected_token`, `verify_admin_token`, `require_admin` (S3a, S3b), \u0432\u043a\u043b\u044e\u0447\u0430\u044f \u043d\u0430\u0439\u0434\u0435\u043d\u043d\u044b\u0439 \u043f\u0440\u0438 \u0430\u043d\u0430\u043b\u0438\u0437\u0435 \u0434\u043e\u043f. boundary-\u043a\u0435\u0439\u0441: \u043f\u043e\u0440\u044f\u0434\u043e\u043a \u0432\u044b\u0437\u043e\u0432\u0430 `expected_token()` \u0432 `verify_admin_token` \u0438\u0437\u043c\u0435\u043d\u0438\u043b\u0441\u044f, \u0438\u0437-\u0437\u0430 \u0447\u0435\u0433\u043e `verify_admin_token(None)` \u043d\u0430 \u043d\u0435\u043a\u043e\u043d\u0444\u0438\u0433\u0443\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u043e\u0439 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0435 \u0442\u0435\u043f\u0435\u0440\u044c \u0431\u0440\u043e\u0441\u0430\u0435\u0442 `AuthError`, \u0430 \u0440\u0430\u043d\u044c\u0448\u0435 \u0442\u0438\u0445\u043e \u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u043b `False`\n\n\u041a\u0430\u0436\u0434\u044b\u0439 \u0434\u0435\u0444\u0435\u043a\u0442 \u043f\u043e\u043a\u0440\u044b\u0442 regression + boundary + neighbour \u0442\u0435\u0441\u0442\u043e\u043c; \u0434\u043b\u044f \u043a\u0430\u0436\u0434\u043e\u0433\u043e \u0442\u0435\u0441\u0442\u0430 \u0432 \u043e\u0442\u0447\u0451\u0442\u0435 \u0437\u0430\u0444\u0438\u043a\u0441\u0438\u0440\u043e\u0432\u0430\u043d pre-fix \u0432\u0435\u0440\u0434\u0438\u043a\u0442 \u0441 \u043e\u0431\u043e\u0441\u043d\u043e\u0432\u0430\u043d\u0438\u0435\u043c \u043f\u043e \u043a\u043e\u0434\u0443 \u0438\u0437 `fix-summary.md`.\n\n\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b \u0437\u0430\u043f\u0443\u0441\u043a\u0430:\n- \u041f\u043e\u043b\u043d\u044b\u0439 \u043d\u0430\u0431\u043e\u0440 \u0434\u043e \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0442\u0435\u0441\u0442\u043e\u0432: `32 passed in 0.30s`\n- \u041f\u043e\u043b\u043d\u044b\u0439 \u043d\u0430\u0431\u043e\u0440 \u043f\u043e\u0441\u043b\u0435: `49 passed in 0.11s` (\u0432\u0441\u0435 \u043d\u043e\u0432\u044b\u0435 \u0442\u0435\u0441\u0442\u044b \u0437\u0435\u043b\u0451\u043d\u044b\u0435, `src/` \u043d\u0435 \u0442\u0440\u043e\u0433\u0430\u043b)\n- \u0418\u0437\u043e\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u0437\u0430\u043f\u0443\u0441\u043a `tests/test_auth_fixes.py`: `8 passed in 0.02s`\n\n\u041e\u0442\u0447\u0451\u0442: `context/bugs/BUG-001/test-report.md`",
+  "ttft_ms": 3113,
+  "ttft_stream_ms": 2495,
+  "time_to_request_ms": 172,
+  "type": "result",
+  "duration_ms": 244048,
+  "uuid": "6ebc25d8-485c-4649-801e-247296fa5f61"
+}

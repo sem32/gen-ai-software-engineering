@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Runtime state produced by the app, not part of the submission
+data/
+exports/
+
+# The pipeline's per-stage transcripts ARE part of the submission: re-include them,
+# overriding the repository-root `logs/` rule.
+!artifacts/logs/
+!artifacts/logs/**
