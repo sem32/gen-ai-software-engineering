@@ -1,0 +1,37 @@
+$ sed -n "1,30p" context/bugs/BUG-001/security-report.md
+
+# Security Report — BUG-001
+
+## Scope
+
+Review scope is the **Changed Files** table of `context/bugs/BUG-001/fix-summary.md`:
+
+| File | Functions reviewed |
+|---|---|
+| `src/auth.py` | module header (`DEFAULT_ADMIN_TOKEN` removed, `import hmac` added), `expected_token`, `verify_admin_token`, `require_admin` |
+| `src/storage.py` | module import (line 9), `list_tasks`, `export_report` |
+| `src/stats.py` | `average_completion_days` |
+
+## Summary
+
+| Severity | Count |
+|---|---|
+| CRITICAL | 0 |
+| HIGH | 0 |
+| MEDIUM | 1 |
+| LOW | 4 |
+| INFO | 1 |
+
+**Highest severity found: MEDIUM.**
+
+**Verdict**: all four security concerns the fix claimed to close are genuinely closed — the hardcoded
+admin token is gone, the comparison is constant-time, the rejection message no longer echoes the
+supplied token, and the export containment check resists relative traversal, absolute paths, symlinked
+files *and* symlinked directories. The fix introduced no high-impact defect. What remains is one
+
+### SEC-1 — Admin token is passed as a command-line argument and is readable from the process table
+
+- **Severity**: MEDIUM
+- **Location**: `src/cli.py:61` (`admin.add_argument("--token", …)`), consumed at `src/cli.py:102` → `src/auth.py:40`
+- **Category**: hardcoded/exposed secrets — credential disclosure
+- **Description**: `--token` is the only way to supply the admin credential. Command-line arguments

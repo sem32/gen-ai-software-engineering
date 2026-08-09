@@ -1,0 +1,77 @@
+{
+  "is_error": false,
+  "duration_api_ms": 296169,
+  "num_turns": 26,
+  "stop_reason": "end_turn",
+  "session_id": "744de3ee-8905-41e5-812b-8ec9ff9f529b",
+  "total_cost_usd": 1.539133,
+  "usage": {
+    "input_tokens": 22,
+    "cache_creation_input_tokens": 59570,
+    "cache_read_input_tokens": 511224,
+    "output_tokens": 27474,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 59570,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 935,
+        "cache_read_input_tokens": 64629,
+        "cache_creation_input_tokens": 12584,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 12584
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 771,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.000861,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty"
+    },
+    "claude-opus-5": {
+      "inputTokens": 22,
+      "outputTokens": 27474,
+      "cacheReadInputTokens": 511224,
+      "cacheCreationInputTokens": 59570,
+      "webSearchRequests": 0,
+      "costUSD": 1.538272,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "\u0412\u0435\u0440\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u0430.\n\n**\u0418\u0442\u043e\u0433: `PASS` \u2014 Research Quality B (`RELIABLE`)**\n\n| \u041c\u0435\u0442\u0440\u0438\u043a\u0430 | \u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435 |\n|---|---|\n| \u0412\u0441\u0435\u0433\u043e \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u0435\u043c\u044b\u0445 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u0439 (N) | 76 |\n| `VERIFIED` / `DRIFTED` / `WRONG` / `UNVERIFIABLE` | 73 / 2 / 1 / 0 |\n| **D1** Reference accuracy | (73 + 0.5\u00d72) / 76 = 74/76 = **97.36%** |\n| **D2** Snippet fidelity | **100%** (6 \u0438\u0437 6 \u0444\u0440\u0430\u0433\u043c\u0435\u043d\u0442\u043e\u0432 \u0441\u043e\u0432\u043f\u0430\u043b\u0438 \u043f\u043e\u0441\u0438\u043c\u0432\u043e\u043b\u044c\u043d\u043e) |\n| **D3** Root-cause coverage | **`COMPLETE`** |\n\n\u0423\u0440\u043e\u0432\u0435\u043d\u044c A \u043d\u0435 \u0434\u043e\u0441\u0442\u0438\u0433\u043d\u0443\u0442 \u043f\u043e \u0434\u0432\u0443\u043c \u043f\u0440\u0438\u0447\u0438\u043d\u0430\u043c: D1 = 97.36% < 98% (\u043e\u043a\u0440\u0443\u0433\u043b\u0435\u043d\u0438\u0435 \u0432\u0432\u0435\u0440\u0445 \u0447\u0435\u0440\u0435\u0437 \u043f\u043e\u0440\u043e\u0433 \u0437\u0430\u043f\u0440\u0435\u0449\u0435\u043d\u043e) \u0438 \u043d\u0430\u043b\u0438\u0447\u0438\u0435 \u043e\u0434\u043d\u043e\u0433\u043e `WRONG`. \u0412\u0441\u0435 \u0443\u0441\u043b\u043e\u0432\u0438\u044f \u0443\u0440\u043e\u0432\u043d\u044f B \u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u044b.\n\n**\u0422\u0440\u0438 \u043d\u0430\u0439\u0434\u0435\u043d\u043d\u044b\u0445 \u0440\u0430\u0441\u0445\u043e\u0436\u0434\u0435\u043d\u0438\u044f** (\u0432\u0441\u0435 \u0441 \u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043d\u044b\u043c\u0438 \u0441\u0441\u044b\u043b\u043a\u0430\u043c\u0438 \u0432 \u043e\u0442\u0447\u0451\u0442\u0435):\n- **D-3 (`WRONG`)** \u2014 \u00ab`tests/` \u2014 668 \u0441\u0442\u0440\u043e\u043a\u00bb \u043e\u0448\u0438\u0431\u043e\u0447\u043d\u043e: \u0440\u0435\u0430\u043b\u044c\u043d\u043e **284 \u0441\u0442\u0440\u043e\u043a\u0438**; 668 \u2014 \u044d\u0442\u043e \u0441\u0443\u043c\u043c\u0430 `src/` + `tests/`. \u0412 \u0442\u0443 \u0436\u0435 \u044f\u0447\u0435\u0439\u043a\u0443 \u0441\u043e\u0441\u0435\u0434\u043d\u0435\u0435 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u0435 \u00ab32 \u0442\u0435\u0441\u0442\u0430\u00bb \u0432\u0435\u0440\u043d\u043e.\n- **D-1 (`DRIFTED`)** \u2014 `main` \u0443\u043a\u0430\u0437\u0430\u043d \u043a\u0430\u043a `cli.py:66-118`, \u0444\u0430\u043a\u0442\u0438\u0447\u0435\u0441\u043a\u0438 \u0442\u0435\u043b\u043e \u0444\u0443\u043d\u043a\u0446\u0438\u0438 \u2014 **`src/cli.py:66-114`**, \u0441\u0442\u0440\u043e\u043a\u0438 117-118 \u044d\u0442\u043e `__main__`-guard.\n- **D-2 (`DRIFTED`)** \u2014 `tests/test_stats.py` \u0443\u043a\u0430\u0437\u0430\u043d \u043a\u0430\u043a 1-56, \u0444\u0430\u0439\u043b \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 **55 \u0441\u0442\u0440\u043e\u043a**.\n\n\u041f\u0440\u0430\u0432\u0438\u043b\u0430 \u044d\u0441\u043a\u0430\u043b\u0430\u0446\u0438\u0438 \u043d\u0435 \u0441\u0440\u0430\u0431\u043e\u0442\u0430\u043b\u0438: \u0435\u0434\u0438\u043d\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0439 `WRONG` \u043e\u0442\u043d\u043e\u0441\u0438\u0442\u0441\u044f \u043d\u0435 \u043a \u0444\u0430\u0439\u043b\u0443, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u0437\u0430\u0442\u0440\u043e\u043d\u0435\u0442 \u0444\u0438\u043a\u0441, \u0430 \u043a \u0430\u0433\u0440\u0435\u0433\u0430\u0442\u043d\u043e\u0439 \u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0435 \u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0430; \u043d\u0438 \u043e\u0434\u0438\u043d \u0446\u0438\u0442\u0438\u0440\u0443\u0435\u043c\u044b\u0439 \u043f\u0443\u0442\u044c \u043d\u0435 \u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442; D3 \u2260 `MISSING`.\n\n\u0412\u0441\u0435 \u0447\u0435\u0442\u044b\u0440\u0435 \u0441\u0438\u043c\u043f\u0442\u043e\u043c\u0430 (S1, S2, S3a, S3b) \u0432\u043e\u0441\u043f\u0440\u043e\u0438\u0437\u0432\u0435\u0434\u0435\u043d\u044b \u0437\u0430\u043d\u043e\u0432\u043e \u0432 \u044d\u0442\u043e\u0439 \u0441\u0435\u0441\u0441\u0438\u0438 \u043d\u0430 \u0432\u0440\u0435\u043c\u0435\u043d\u043d\u044b\u0445 \u0445\u0440\u0430\u043d\u0438\u043b\u0438\u0449\u0430\u0445 \u0432 `/tmp` (`ZeroDivisionError` \u0441 exit code 1; \u043f\u043e\u0440\u044f\u0434\u043e\u043a `high, low, medium, urgent`; `expected_token()` \u2192 `'hw4-admin-secret'` \u0431\u0435\u0437 \u043f\u0435\u0440\u0435\u043c\u0435\u043d\u043d\u043e\u0439 \u043e\u043a\u0440\u0443\u0436\u0435\u043d\u0438\u044f \u0438 \u044d\u0445\u043e \u0442\u043e\u043a\u0435\u043d\u0430 \u0432 `forbidden: admin token rejected: 'wrong-guess'`; \u0437\u0430\u043f\u0438\u0441\u044c `/tmp/VERIFY-ESCAPED.txt` \u0437\u0430 \u043f\u0440\u0435\u0434\u0435\u043b\u044b export-\u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0430 \u0441 exit code 0). \u0412\u0440\u0435\u043c\u0435\u043d\u043d\u044b\u0435 \u0444\u0430\u0439\u043b\u044b \u0443\u0434\u0430\u043b\u0435\u043d\u044b, `data/` \u043d\u0435 \u0437\u0430\u0442\u0440\u043e\u043d\u0443\u0442, \u0438\u0441\u0445\u043e\u0434\u043d\u044b\u0439 \u043a\u043e\u0434 \u0438 \u0442\u0435\u0441\u0442\u044b \u043d\u0435 \u0438\u0437\u043c\u0435\u043d\u044f\u043b\u0438\u0441\u044c.\n\nBug Planner \u043c\u043e\u0436\u0435\u0442 \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0430\u0442\u044c, \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u044f \u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043d\u044b\u0435 \u0441\u0441\u044b\u043b\u043a\u0438 \u0438\u0437 \u0440\u0430\u0437\u0434\u0435\u043b\u0430 *Discrepancies Found*.\n\ncontext/bugs/BUG-001/research/verified-research.md",
+  "ttft_ms": 2185,
+  "ttft_stream_ms": 1390,
+  "time_to_request_ms": 102,
+  "type": "result",
+  "duration_ms": 298128,
+  "uuid": "86ada193-ce83-411b-94d6-7236acfcd3b4"
+}

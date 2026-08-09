@@ -1,0 +1,114 @@
+$ diff -u <pre-fix src> src        # changes applied by the bug-fixer agent
+
+a/src/stats.py	2026-08-10 00:29:28
++++ b/src/stats.py	2026-08-10 00:40:54
+@@ -43,8 +43,14 @@
+ 
+ 
+ def average_completion_days(tasks: list[Task]) -> float:
+-    """Mean number of days it took to finish the completed tasks."""
++    """Mean number of days it took to finish the completed tasks.
++
++    A collection with no completed tasks has no average; it reports ``0.0``,
++    matching how :func:`completion_rate` represents "no data".
++    """
+     completed = [task for task in tasks if task.status == "done" and task.completed_at]
++    if not completed:
++        return 0.0
+     total_days = sum(completion_days(task) for task in completed)
+     return round(total_days / len(completed), 2)
+ 
+a/src/storage.py	2026-08-10 00:29:28
++++ b/src/storage.py	2026-08-10 00:41:25
+@@ -6,7 +6,7 @@
+ from datetime import date
+ from pathlib import Path
+ 
+-from .models import Task, ValidationError
++from .models import PRIORITY_RANK, Task, ValidationError
+ 
+ DEFAULT_STORE_PATH = Path("data/tasks.json")
+ DEFAULT_EXPORT_DIR = Path("exports")
+@@ -67,7 +67,10 @@
+     if sort not in SORT_KEYS:
+         raise ValidationError(f"sort must be one of {', '.join(SORT_KEYS)}; got {sort!r}")
+     if sort == "priority":
+-        return sorted(tasks, key=lambda task: task.priority)
++        return sorted(
++            tasks,
++            key=lambda task: (PRIORITY_RANK[task.priority], task.created_at, task.id),
++        )
+     if sort == "title":
+         return sorted(tasks, key=lambda task: task.title.lower())
+     return sorted(tasks, key=lambda task: (task.created_at, task.id))
+@@ -89,8 +92,17 @@
+     filename: str,
+     export_dir: Path | str = DEFAULT_EXPORT_DIR,
+ ) -> Path:
+-    """Write a task report under ``export_dir`` and return the written path."""
+-    target = Path(export_dir) / filename
++    """Write a task report under ``export_dir`` and return the written path.
++
++    ``filename`` must resolve to a location inside ``export_dir``; ``..``
++    segments and absolute paths are rejected before anything is written.
++    """
++    base = Path(export_dir)
++    target = base / filename
++    if base.resolve() not in target.resolve().parents:
++        raise ValidationError(
++            f"export filename must stay inside the export directory; got {filename!r}"
++        )
+     target.parent.mkdir(parents=True, exist_ok=True)
+     target.write_text(render_report(tasks), encoding="utf-8")
+     return target
+a/src/auth.py	2026-08-10 00:29:28
++++ b/src/auth.py	2026-08-10 00:41:18
+@@ -2,10 +2,10 @@
+ 
+ from __future__ import annotations
+ 
++import hmac
+ import os
+ 
+ ENV_VAR = "TASKTRACKER_ADMIN_TOKEN"
+-DEFAULT_ADMIN_TOKEN = "hw4-admin-secret"
+ 
+ 
+ class AuthError(Exception):
+@@ -13,18 +13,31 @@
+ 
+ 
+ def expected_token() -> str:
+-    """Return the admin token this installation expects."""
+-    return os.environ.get(ENV_VAR, DEFAULT_ADMIN_TOKEN)
++    """Return the admin token this installation expects.
+ 
++    Raises :class:`AuthError` when no token is configured: there is no built-in
++    default, so admin commands stay unavailable until an operator sets the
++    environment variable.
++    """
++    configured = os.environ.get(ENV_VAR, "")
++    if not configured:
++        raise AuthError(f"admin commands are disabled: {ENV_VAR} is not configured")
++    return configured
+ 
++
+ def verify_admin_token(provided: str | None) -> bool:
+-    """Return True when ``provided`` matches the configured admin token."""
++    """Return True when ``provided`` matches the configured admin token.
++
++    The comparison is constant-time. Raises :class:`AuthError` when no admin
++    token is configured for this installation.
++    """
++    expected = expected_token()
+     if provided is None:
+         return False
+-    return provided == expected_token()
++    return hmac.compare_digest(provided.encode("utf-8"), expected.encode("utf-8"))
+ 
+ 
+ def require_admin(provided: str | None) -> None:
+     """Raise :class:`AuthError` unless ``provided`` is the admin token."""
+     if not verify_admin_token(provided):
+-        raise AuthError(f"admin token rejected: {provided!r}")
++        raise AuthError("admin token rejected")

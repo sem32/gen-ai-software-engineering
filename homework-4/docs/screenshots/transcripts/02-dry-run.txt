@@ -1,0 +1,62 @@
+$ ./run-pipeline.sh --dry-run
+[1mHomework 4 — 4-agent bug-fix pipeline[0m
+[2mbug BUG-001 · 6 stages · run 20260810-005446[0m
+[32m✓ preflight: claude CLI, python3, pytest, agent definitions and skills present[0m
+[2m────────────────────────────────────────────────────────────────────────────[0m
+[1m[34m▶ Stage 01/6 — bug-researcher[0m
+  [2mmodel  :[0m claude-sonnet-5
+  [2mskills :[0m (none)
+  [2moutput :[0m context/bugs/BUG-001/research/codebase-research.md
+[2m  ⋯ dry run — would invoke: claude -p --model claude-sonnet-5 --allowed-tools "Read Grep Glob Bash Write"[0m
+[2m    (output exists — this stage would be skipped as cached; add --force to re-run)[0m
+[2m────────────────────────────────────────────────────────────────────────────[0m
+[1m[34m▶ Stage 02/6 — research-verifier[0m
+  [2mmodel  :[0m claude-opus-5
+  [2mskills :[0m skills/research-quality-measurement.md
+  [2moutput :[0m context/bugs/BUG-001/research/verified-research.md
+[2m  ⋯ dry run — would invoke: claude -p --model claude-opus-5 --allowed-tools "Read Grep Glob Bash Write"[0m
+[2m    (output exists — this stage would be skipped as cached; add --force to re-run)[0m
+[2m────────────────────────────────────────────────────────────────────────────[0m
+[1m[34m▶ Stage 03/6 — bug-planner[0m
+  [2mmodel  :[0m claude-opus-5
+  [2mskills :[0m (none)
+  [2moutput :[0m context/bugs/BUG-001/implementation-plan.md
+[2m  ⋯ dry run — would invoke: claude -p --model claude-opus-5 --allowed-tools "Read Grep Glob Bash Write"[0m
+[2m    (output exists — this stage would be skipped as cached; add --force to re-run)[0m
+[2m────────────────────────────────────────────────────────────────────────────[0m
+[1m[34m▶ Stage 04/6 — bug-fixer[0m
+  [2mmodel  :[0m claude-sonnet-5
+  [2mskills :[0m (none)
+  [2moutput :[0m context/bugs/BUG-001/fix-summary.md
+[2m  ⋯ dry run — would invoke: claude -p --model claude-sonnet-5 --allowed-tools "Read Grep Glob Edit Write Bash"[0m
+[2m    (output exists — this stage would be skipped as cached; add --force to re-run)[0m
+[2m────────────────────────────────────────────────────────────────────────────[0m
+[1m[34m▶ Stage 05/6 — security-verifier[0m
+  [2mmodel  :[0m claude-opus-5
+  [2mskills :[0m (none)
+  [2moutput :[0m context/bugs/BUG-001/security-report.md
+[2m  ⋯ dry run — would invoke: claude -p --model claude-opus-5 --allowed-tools "Read Grep Glob Bash Write"[0m
+[2m    (output exists — this stage would be skipped as cached; add --force to re-run)[0m
+[32m✓ security gate — no CRITICAL or HIGH findings in context/bugs/BUG-001/security-report.md[0m
+[2m────────────────────────────────────────────────────────────────────────────[0m
+[1m[34m▶ Stage 06/6 — unit-test-generator[0m
+  [2mmodel  :[0m claude-sonnet-5
+  [2mskills :[0m skills/unit-tests-FIRST.md
+  [2moutput :[0m context/bugs/BUG-001/test-report.md
+[2m  ⋯ dry run — would invoke: claude -p --model claude-sonnet-5 --allowed-tools "Read Grep Glob Edit Write Bash"[0m
+[2m    (output exists — this stage would be skipped as cached; add --force to re-run)[0m
+[2m────────────────────────────────────────────────────────────────────────────[0m
+[1mRunning the project test suite[0m [2m(python3 -m pytest)[0m
+.................................................                        [100%]
+49 passed in 0.29s
+[2m────────────────────────────────────────────────────────────────────────────[0m
+[1mPipeline summary[0m [2m(run 20260810-005446)[0m
+[2m  #  agent                  model              status    time   cost[0m
+  01 bug-researcher         claude-sonnet-5    [36mDRY-RUN/CACHED[0m -      -
+  02 research-verifier      claude-opus-5      [36mDRY-RUN/CACHED[0m -      -
+  03 bug-planner            claude-opus-5      [36mDRY-RUN/CACHED[0m -      -
+  04 bug-fixer              claude-sonnet-5    [36mDRY-RUN/CACHED[0m -      -
+  05 security-verifier      claude-opus-5      [36mDRY-RUN/CACHED[0m -      -
+  06 unit-test-generator    claude-sonnet-5    [36mDRY-RUN/CACHED[0m -      -
+[2m────────────────────────────────────────────────────────────────────────────[0m
+[32m✓ pipeline finished — artifacts in context/bugs/BUG-001/, logs in artifacts/logs/20260810-005446/[0m
