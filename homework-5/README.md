@@ -29,7 +29,7 @@ with `tools/list` / `resources/list` and invokes them with `tools/call` /
 | # | Server | Transport | What it is | Task |
 |---|---|---|---|---|
 | 1 | `github` | HTTP | Official remote GitHub MCP server, `https://api.githubcopilot.com/mcp/`, 44 tools | Task 1 |
-| 2 | `filesystem` | stdio | `@modelcontextprotocol/server-filesystem` via `npx`, sandboxed to `./homework-5` and `./homework-2`, 14 tools | Task 2 |
+| 2 | `filesystem` | stdio | `@modelcontextprotocol/server-filesystem` via `npx`, started with `./homework-5` and `./homework-2`, 14 tools | Task 2 |
 | 3 | `jira` | HTTP | Atlassian remote MCP server, `https://mcp.atlassian.com/v1/mcp` (OAuth to `wildix.atlassian.net`) | Task 3 |
 | 4 | `lorem-custom` | stdio | Own FastMCP server, `custom-mcp-server/server.py` — 1 tool, 1 resource, 1 resource template | Task 4 |
 
@@ -66,14 +66,16 @@ Registered as a remote HTTP server authenticated with a GitHub PAT (taken from
 - `list_commits(perPage=5)` → `de9b4fc Add recommended agents, skills, and pipelines`, `763118e Homework 5,6 added`, …
 
 Transcript: [`docs/mcp-call-logs/01-github-mcp.md`](docs/mcp-call-logs/01-github-mcp.md) ·
-Screenshots: [`workflow-4`](docs/screenshots/workflow-4-mcp-config-and-jira-call.png) (config), [`workflow-6`](docs/screenshots/workflow-6-mcp-list-and-readme-fixes.png) (`claude mcp list`) · in-client call result: `docs/screenshots/github-mcp-result.png` ⏳
+Call result: [`github-mcp-result.png`](docs/screenshots/github-mcp-result.png) ·
+also [`workflow-4`](docs/screenshots/workflow-4-mcp-config-and-jira-call.png) (config), [`workflow-6`](docs/screenshots/workflow-6-mcp-list-and-readme-fixes.png) (`claude mcp list`)
 
 ## Task 2 — Filesystem MCP
 
-Registered over stdio with two allowed roots, so the server can never touch
-anything outside the homework folders:
+Registered over stdio with two directories on the command line:
 
 ```text
+npx -y @modelcontextprotocol/server-filesystem ./homework-5 ./homework-2
+
 tools/call list_allowed_directories
 Allowed directories:
 /Users/sem/git/education/gen-ai-software-engineering/homework-5
@@ -83,8 +85,26 @@ Allowed directories:
 Interactions: `list_directory(homework-5)`, `read_text_file(requirements.txt)`,
 `directory_tree(custom-mcp-server)`.
 
+⚠️ **The command-line directories are not the last word.** This server also supports
+the MCP *roots* protocol, and when the client advertises roots it **replaces** the
+allowed list with them (`dist/index.js`: `allowedDirectories = [...validatedRootDirs]`).
+Claude Code advertises the project directory, so from inside Claude Code the same
+server reports:
+
+```text
+tools/call list_allowed_directories
+Allowed directories:
+/Users/sem/git/education/gen-ai-software-engineering
+```
+
+The two-directory sandbox above therefore applies to clients that do not send roots —
+such as the verification script in `scripts/`. To restrict Claude Code itself, the
+client's project root is what has to be narrowed (e.g. start the client inside
+`homework-5/`), not the server's arguments.
+
 Transcript: [`docs/mcp-call-logs/02-filesystem-mcp.md`](docs/mcp-call-logs/02-filesystem-mcp.md) ·
-Screenshots: [`workflow-6`](docs/screenshots/workflow-6-mcp-list-and-readme-fixes.png) (`claude mcp list`) · in-client call result: `docs/screenshots/filesystem-mcp-result.png` ⏳
+Call result: [`filesystem-mcp-result.png`](docs/screenshots/filesystem-mcp-result.png) ·
+also [`workflow-6`](docs/screenshots/workflow-6-mcp-list-and-readme-fixes.png) (`claude mcp list`)
 
 ## Task 3 — Jira MCP
 
@@ -105,7 +125,8 @@ creation date are reproduced — no summaries, descriptions, assignees or custom
 data. The unmasked transcript stays local in a git-ignored `*.local.md` file.
 
 Transcript: [`docs/mcp-call-logs/03-jira-mcp.md`](docs/mcp-call-logs/03-jira-mcp.md) ·
-Screenshot: [`workflow-4`](docs/screenshots/workflow-4-mcp-config-and-jira-call.png) (the Atlassian call being made) · in-client call result: `docs/screenshots/jira-or-notion-mcp-result.png` ⏳
+Call result: [`jira-or-notion-mcp-result.png`](docs/screenshots/jira-or-notion-mcp-result.png) ·
+also [`workflow-4`](docs/screenshots/workflow-4-mcp-config-and-jira-call.png) (the Atlassian call being made)
 
 ## Task 4 — Custom MCP server (FastMCP)
 
@@ -142,7 +163,8 @@ Dependency: `fastmcp>=3.4.6` in
 [`custom-mcp-server/requirements.txt`](custom-mcp-server/requirements.txt).
 
 Transcript: [`docs/mcp-call-logs/04-custom-mcp.md`](docs/mcp-call-logs/04-custom-mcp.md) ·
-Screenshots: [`workflow-2`](docs/screenshots/workflow-2-custom-server-created.png), [`workflow-3`](docs/screenshots/workflow-3-requirements-and-verification-script.png) · in-client call result: `docs/screenshots/custom-mcp-read-tool-result.png` ⏳
+Call result: [`custom-mcp-read-tool-result.png`](docs/screenshots/custom-mcp-read-tool-result.png) ·
+also [`workflow-2`](docs/screenshots/workflow-2-custom-server-created.png), [`workflow-3`](docs/screenshots/workflow-3-requirements-and-verification-script.png)
 
 ---
 
@@ -167,13 +189,25 @@ What was decided by the human, not the model: the Jira project (WMS), masking of
 internal ticket keys, and taking the screenshots. What was verified by execution
 rather than trusted: every MCP call in this README.
 
-> ⏳ **Still open** — `TASKS.md` also asks for one screenshot of an MCP *call result*
-> per server taken inside the client (`github-mcp-result.png`,
-> `filesystem-mcp-result.png`, `jira-or-notion-mcp-result.png`,
-> `custom-mcp-read-tool-result.png`). Those four are not captured yet; the equivalent
-> evidence is currently the command-line transcripts in
-> [`docs/mcp-call-logs/`](docs/mcp-call-logs/). The exact prompts to reproduce them
-> are listed in [`docs/screenshots/README.md`](docs/screenshots/README.md).
+### The four MCP call results
+
+One screenshot per server, each showing the tool that was invoked, its arguments and
+the value that came back. They were captured from **headless Claude Code runs**
+(`claude -p "…"`) against the servers declared in `.mcp.json`, so every call is real:
+
+| Server | Screenshot | Call shown |
+|---|---|---|
+| `github` | [`github-mcp-result.png`](docs/screenshots/github-mcp-result.png) | `list_pull_requests` + `list_commits` on `sem32/gen-ai-software-engineering` |
+| `filesystem` | [`filesystem-mcp-result.png`](docs/screenshots/filesystem-mcp-result.png) | `list_allowed_directories`, `list_directory`, `directory_tree` |
+| `jira` | [`jira-or-notion-mcp-result.png`](docs/screenshots/jira-or-notion-mcp-result.png) | `searchJiraIssuesUsingJql` — the last 5 WMS bugs, keys masked |
+| `lorem-custom` | [`custom-mcp-read-tool-result.png`](docs/screenshots/custom-mcp-read-tool-result.png) | `read(word_count=12)`, `read()`, resource `lorem://ipsum/30` |
+
+Two honest caveats about these four. The Jira shot went through the
+already-authenticated Atlassian connector rather than the project-scoped `jira`
+entry, because a headless run cannot complete the OAuth handshake — it is the same
+`mcp.atlassian.com/v1/mcp` endpoint either way. And the filesystem shot is what
+uncovered the roots behaviour documented in Task 2: it reports the repository root,
+not the two directories from the command line.
 
 ## Verification
 
@@ -200,7 +234,7 @@ Results at the time of submission:
 | `read(word_count=0)` | ✅ rejected with a clear error |
 | `.mcp.json` parses and all stdio/HTTP entries connect | ✅ 3/3 non-OAuth servers |
 | GitHub MCP authenticated call | ✅ `get_me` → `sem32` |
-| Filesystem MCP sandboxed call | ✅ 2 allowed roots |
+| Filesystem MCP call | ✅ 2 allowed roots from the CLI args (a roots-aware client overrides them — see Task 2) |
 | Jira MCP JQL call | ✅ 5 WMS bugs returned |
 | `claude mcp list` registration | ✅ all 4 listed; 3 `Connected`, `jira` pending its one-time OAuth login |
 
@@ -227,13 +261,19 @@ homework-5/
     │   ├── 03-jira-mcp.md
     │   └── 04-custom-mcp.md
     └── screenshots/
-        ├── README.md                 # what each shot shows / what is still missing
-        └── workflow-1…7-*.png        # the AI session that produced this homework
+        ├── README.md                       # index of every shot
+        ├── github-mcp-result.png           # one MCP call result per server
+        ├── filesystem-mcp-result.png
+        ├── jira-or-notion-mcp-result.png
+        ├── custom-mcp-read-tool-result.png
+        └── workflow-1…7-*.png              # the AI session that produced this homework
 ```
 
 ## Security notes
 
 - No secret is committed: the GitHub token is injected via `${GITHUB_PERSONAL_ACCESS_TOKEN}`, Jira uses OAuth.
-- The Filesystem server is restricted to two homework directories.
+- The Filesystem server is started with two homework directories; note that an MCP
+  client advertising *roots* (Claude Code does) overrides that list with its own
+  project root — see Task 2.
 - The GitHub `get_me` transcript has the account e-mail redacted.
 - Jira ticket keys are masked in everything that is committed.

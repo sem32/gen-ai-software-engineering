@@ -2,7 +2,10 @@
 
 > Produced by `python scripts/verify_mcp_servers.py filesystem`, which reads `homework-5/.mcp.json` and opens a real MCP session (initialize → tools/list → tools/call).
 
-`@modelcontextprotocol/server-filesystem`, launched via `npx` and sandboxed to `./homework-5` and `./homework-2`.
+`@modelcontextprotocol/server-filesystem`, launched via `npx` with `./homework-5` and `./homework-2`.
+This client does not advertise MCP *roots*, so the command-line directories stay in
+effect; a roots-aware client such as Claude Code replaces them with its own project
+root (see the Task 2 section of the README).
 
 ```text
 ### filesystem  <-  {"type": "stdio", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "./homework-5", "./homework-2"]}

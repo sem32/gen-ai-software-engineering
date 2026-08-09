@@ -18,41 +18,50 @@ report.
 | `workflow-6-mcp-list-and-readme-fixes.png` | The real `claude mcp list` output with all four servers, and the correction of the README once `jira` turned out to need its own OAuth login |
 | `workflow-7-final-summary.png` | The agent's final report: what each of the four servers returned |
 
-## B. MCP call results — still to capture ⏳
+## B. MCP call results — present ✅
 
-`TASKS.md` asks for a screenshot of an MCP **call result** per server, taken in a
-Claude Code session. Those four are not captured yet. The command-line transcripts in
-[`../mcp-call-logs/`](../mcp-call-logs/) already prove the same calls, but the
-screenshots are an explicit deliverable.
+One screenshot per server, each showing the MCP tool that was invoked, its arguments
+and the value that came back. Captured from **headless Claude Code runs**
+(`claude -p "…"`) against the servers declared in `.mcp.json`, so every call is a real
+one; the same calls are also stored as text in [`../mcp-call-logs/`](../mcp-call-logs/).
 
-### Before you start
+| File | Server | Call shown |
+|---|---|---|
+| `github-mcp-result.png` | `github` | `list_pull_requests` + `list_commits` on `sem32/gen-ai-software-engineering` |
+| `filesystem-mcp-result.png` | `filesystem` | `list_allowed_directories`, `list_directory`, `directory_tree` |
+| `jira-or-notion-mcp-result.png` | `jira` | `searchJiraIssuesUsingJql` — the last 5 WMS bugs (keys masked) |
+| `custom-mcp-read-tool-result.png` | `lorem-custom` | `read(word_count=12)`, `read()` with the default, and the resource `lorem://ipsum/30` |
+
+Two caveats worth stating:
+
+- The **Jira** shot goes through the already-authenticated Atlassian connector instead
+  of the project-scoped `jira` entry — a headless run cannot complete the OAuth
+  handshake. It is the same `https://mcp.atlassian.com/v1/mcp` endpoint either way.
+- The **filesystem** shot is what revealed that the client's MCP *roots* override the
+  server's command-line directories: it reports the repository root. That finding is
+  documented in the Task 2 section of the homework README.
+
+### Reproducing them
 
 ```bash
 export GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token)
 cd /path/to/gen-ai-software-engineering
-claude
+
+claude -p "Using the github MCP server, call list_pull_requests and list_commits for owner sem32, repo gen-ai-software-engineering, perPage 5."
+claude -p "Using the filesystem MCP server, call list_allowed_directories, then list_directory on homework-5, then directory_tree on homework-5/custom-mcp-server."
+claude -p "Give me the tickets of the last 5 bugs on the WMS project"
+claude -p "Using the lorem-custom MCP server: call the read tool with word_count = 12, then with no arguments, then read the resource lorem://ipsum/30."
 ```
 
-Inside the session run `/mcp` once: approve the project servers and complete the
-Atlassian OAuth login for `jira`. A screenshot of that `/mcp` panel listing the four
-servers is a useful extra (`mcp-servers-list.png`).
-
-### The four shots
-
-| File | Prompt to type | What must be visible |
-|---|---|---|
-| `github-mcp-result.png` | `Using the github MCP server, list the last 5 pull requests and the last 5 commits of sem32/gen-ai-software-engineering` | the `github - list_pull_requests` / `list_commits` tool calls and their results |
-| `filesystem-mcp-result.png` | `Using the filesystem MCP server, show the allowed directories and the tree of homework-5/custom-mcp-server` | the `filesystem - list_allowed_directories` / `directory_tree` calls and their output |
-| `jira-or-notion-mcp-result.png` | `Give me the tickets of the last 5 bugs on the WMS project` | the `jira - searchJiraIssuesUsingJql` call with the JQL, plus the five returned bug keys |
-| `custom-mcp-read-tool-result.png` | `Using the lorem-custom MCP server, call the read tool with word_count = 12, then read the resource lorem://ipsum/30` | the `lorem-custom - read` tool call, its arguments and the returned words |
-
-Expand the tool-call blocks (`ctrl+o` toggles full output in Claude Code) so both the
-request and the response are visible in the frame.
+Inside an interactive session the same prompts work after `/mcp` (approve the project
+servers and complete the Atlassian OAuth login); `ctrl+o` expands the tool-call blocks
+so request and response are both in frame.
 
 ## Privacy
 
-The Jira screenshot comes from a private corporate Jira. Before committing it, crop
-or blur everything except the ticket keys, type, status and dates — no summaries,
-descriptions, assignees or customer data. The committed Markdown transcript
-([`../mcp-call-logs/03-jira-mcp.md`](../mcp-call-logs/03-jira-mcp.md)) masks the keys
-as well.
+The Jira screenshot comes from a private corporate Jira, so it shows only ticket
+keys, type, priority, status and creation date — no summaries, descriptions,
+assignees or customer data — and the keys themselves are masked as `WMS-273XX`. The
+committed Markdown transcript
+([`../mcp-call-logs/03-jira-mcp.md`](../mcp-call-logs/03-jira-mcp.md)) masks them the
+same way; the unmasked version stays local in a git-ignored `*.local.md` file.

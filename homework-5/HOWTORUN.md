@@ -51,14 +51,17 @@ stdin — that silence is the expected, healthy state. Stop it with `Ctrl+C`.
 
 ## 4. Connect the MCP configuration
 
-The configuration lives in [`homework-5/.mcp.json`](.mcp.json) and an identical copy
-sits at the **repository root** (`../.mcp.json`), because Claude Code reads project
-MCP servers from `.mcp.json` in the directory it is started in. Keep the two files in
-sync:
+The configuration lives in [`homework-5/.mcp.json`](.mcp.json), and the repository
+root carries the same four entries in its own `.mcp.json`, because Claude Code reads
+project MCP servers from `.mcp.json` in the directory it is started in. The root file
+may also hold servers belonging to other homeworks, so compare the four entries rather
+than the whole file:
 
 ```bash
 # from the repository root
-diff .mcp.json homework-5/.mcp.json && echo "in sync"
+python3 -c "import json; r=json.load(open('.mcp.json'))['mcpServers']; \
+h=json.load(open('homework-5/.mcp.json'))['mcpServers']; \
+print('in sync' if all(r.get(k)==v for k,v in h.items()) else 'DIFFER')"
 ```
 
 All four servers are declared there:
@@ -178,7 +181,7 @@ npx @modelcontextprotocol/inspector \
 |---|---|
 | `github` fails with 401 | `GITHUB_PERSONAL_ACCESS_TOKEN` not exported before `claude` started, or the token expired. Re-export and restart the client. |
 | `lorem-custom` fails to start | The venv is missing. Re-run step 2; the config points at `./homework-5/.venv/bin/python`. |
-| `filesystem` returns "Access denied" | The path is outside the sandbox. The server is limited to `./homework-5` and `./homework-2`; add more roots as extra `args`. |
+| `filesystem` returns "Access denied" | The path is outside the sandbox. The server starts with `./homework-5` and `./homework-2`, but a client that advertises MCP *roots* (Claude Code does) replaces that list with its own project root — so the effective sandbox is the directory the client was started in. |
 | Servers stay `⏸ Pending approval` | Project-scoped servers must be trusted once: start `claude` in the repo root and accept, or run `claude mcp reset-project-choices`. |
 | Config changes are ignored | Claude Code loads MCP servers at startup — restart the session after editing `.mcp.json`. |
 | `word_count exceeds the document length` | `lorem-ipsum.md` holds ~230 words; ask for fewer. |
