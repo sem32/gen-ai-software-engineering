@@ -1,0 +1,171 @@
+{
+  "generated_at": "2026-08-09T22:54:29Z",
+  "total_transactions": 8,
+  "by_status": {
+    "held": 1,
+    "rejected": 2,
+    "settled": 5
+  },
+  "by_risk_level": {
+    "high": 1,
+    "low": 2,
+    "medium": 3
+  },
+  "volume_by_currency": {
+    "EUR": {
+      "settled_fees": "1.25",
+      "settled_gross": "500.00",
+      "settled_net": "498.75"
+    },
+    "USD": {
+      "held": "75000.00",
+      "settled_fees": "61.75",
+      "settled_gross": "39699.99",
+      "settled_net": "39638.24"
+    }
+  },
+  "rejected": [
+    {
+      "transaction_id": "TXN006",
+      "reasons": [
+        "unknown_currency:XYZ"
+      ]
+    },
+    {
+      "transaction_id": "TXN007",
+      "reasons": [
+        "non_positive_amount"
+      ]
+    }
+  ],
+  "held": [
+    {
+      "transaction_id": "TXN005",
+      "hold_reasons": [
+        "fraud_review_required"
+      ],
+      "risk_score": 60
+    }
+  ],
+  "settled": [
+    {
+      "transaction_id": "TXN001",
+      "currency": "USD",
+      "gross_amount": "1500.00",
+      "fee": "3.75",
+      "net_amount": "1496.25",
+      "value_date": "2026-03-17",
+      "risk_level": "low"
+    },
+    {
+      "transaction_id": "TXN002",
+      "currency": "USD",
+      "gross_amount": "25000.00",
+      "fee": "25.00",
+      "net_amount": "24975.00",
+      "value_date": "2026-03-18",
+      "risk_level": "medium"
+    },
+    {
+      "transaction_id": "TXN003",
+      "currency": "USD",
+      "gross_amount": "9999.99",
+      "fee": "25.00",
+      "net_amount": "9974.99",
+      "value_date": "2026-03-17",
+      "risk_level": "medium"
+    },
+    {
+      "transaction_id": "TXN004",
+      "currency": "EUR",
+      "gross_amount": "500.00",
+      "fee": "1.25",
+      "net_amount": "498.75",
+      "value_date": "2026-03-17",
+      "risk_level": "medium"
+    },
+    {
+      "transaction_id": "TXN008",
+      "currency": "USD",
+      "gross_amount": "3200.00",
+      "fee": "8.00",
+      "net_amount": "3192.00",
+      "value_date": "2026-03-17",
+      "risk_level": "low"
+    }
+  ],
+  "transactions": [
+    {
+      "transaction_id": "TXN001",
+      "status": "settled",
+      "currency": "USD",
+      "amount": "1500.00",
+      "risk_score": 0,
+      "risk_level": "low",
+      "detail": "net 1496.25 value date 2026-03-17"
+    },
+    {
+      "transaction_id": "TXN002",
+      "status": "settled",
+      "currency": "USD",
+      "amount": "25000.00",
+      "risk_score": 40,
+      "risk_level": "medium",
+      "detail": "net 24975.00 value date 2026-03-18"
+    },
+    {
+      "transaction_id": "TXN003",
+      "status": "settled",
+      "currency": "USD",
+      "amount": "9999.99",
+      "risk_score": 35,
+      "risk_level": "medium",
+      "detail": "net 9974.99 value date 2026-03-17"
+    },
+    {
+      "transaction_id": "TXN004",
+      "status": "settled",
+      "currency": "EUR",
+      "amount": "500.00",
+      "risk_score": 40,
+      "risk_level": "medium",
+      "detail": "net 498.75 value date 2026-03-17"
+    },
+    {
+      "transaction_id": "TXN005",
+      "status": "held",
+      "currency": "USD",
+      "amount": "75000.00",
+      "risk_score": 60,
+      "risk_level": "high",
+      "detail": "fraud_review_required"
+    },
+    {
+      "transaction_id": "TXN006",
+      "status": "rejected",
+      "currency": "XYZ",
+      "amount": "200.00",
+      "risk_score": null,
+      "risk_level": null,
+      "detail": "unknown_currency:XYZ"
+    },
+    {
+      "transaction_id": "TXN007",
+      "status": "rejected",
+      "currency": "GBP",
+      "amount": "-100.00",
+      "risk_score": null,
+      "risk_level": null,
+      "detail": "non_positive_amount"
+    },
+    {
+      "transaction_id": "TXN008",
+      "status": "settled",
+      "currency": "USD",
+      "amount": "3200.00",
+      "risk_score": 0,
+      "risk_level": "low",
+      "detail": "net 3192.00 value date 2026-03-17"
+    }
+  ]
+}

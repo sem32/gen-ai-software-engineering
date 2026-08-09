@@ -1,0 +1,34 @@
+{
+  "message_id": "7df606a7-dea6-4270-b29d-b8182050bb46",
+  "timestamp": "2026-08-09T22:54:29Z",
+  "source_agent": "transaction_validator",
+  "target_agent": "pipeline_results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN006",
+    "timestamp": "2026-03-16T10:05:00Z",
+    "source_account": "****1006",
+    "destination_account": "****7700",
+    "amount": "200.00",
+    "currency": "XYZ",
+    "transaction_type": "transfer",
+    "description": "[redacted]",
+    "metadata": {
+      "channel": "online",
+      "country": "US"
+    },
+    "validation": {
+      "agent": "transaction_validator",
+      "valid": false,
+      "reasons": [
+        "unknown_currency:XYZ"
+      ],
+      "checked_at": "2026-08-09T22:54:29Z"
+    },
+    "status": "rejected",
+    "rejection_reasons": [
+      "unknown_currency:XYZ"
+    ],
+    "rejection_reason": "unknown_currency:XYZ"
+  }
+}

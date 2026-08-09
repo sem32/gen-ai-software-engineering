@@ -1,0 +1,52 @@
+> /write-spec multi-agent banking transaction pipeline
+
+  Produced homework-6/specification.md and homework-6/agents.md following
+  .claude/commands/write-spec.md: high-level objective, mid-level objectives
+  (MO-*), implementation notes, context, low-level tasks (T-0..T-9) with a
+  prompt / file / function / details / acceptance block each, guardrails (IN-*)
+  and edge cases (EC-*).
+
+$ .venv/bin/python -c "<python snippet>"
+# Multi-Agent Banking Transaction Pipeline — Specification
+## 1. High-Level Objective
+## 2. Mid-Level Objectives
+## 3. Implementation Notes
+### 3.1 Money
+### 3.2 Currency codes
+### 3.3 Logging and audit trail
+### 3.4 PII
+### 3.5 Message protocol
+### 3.6 Directory contract
+### 3.7 Stack and quality bar
+## 4. Context
+### 4.1 Beginning state
+### 4.2 Ending state
+## 5. Low-Level Tasks
+### T-0. Shared message protocol and audit logging
+### T-1. Transaction Validator
+### T-2. Fraud Detector
+### T-3. Compliance Checker
+### T-4. Settlement Processor
+### T-5. Reporting Agent
+### T-6. Integrator / Orchestrator
+### T-7. Results store and FastMCP server
+### T-8. Test suite and coverage gate
+### T-9. Documentation (Agent 4)
+## 6. Guardrails (IN-\*)
+## 7. Edge cases (EC-\*)
+## 8. Expected outcome for the supplied sample data
+## 9. Definition of done
+
+--- section 8, the regression expectation asserted in tests ---
+| Transaction | Amount | Validator | Risk score | Compliance | Terminal status |
+|---|---|---|---|---|---|
+| TXN001 | 1 500.00 USD | validated | 0 (low) | cleared | **settled** |
+| TXN002 | 25 000.00 USD | validated | 40 (medium), review required | cleared, CTR required | **settled** |
+| TXN003 | 9 999.99 USD | validated | 35 (medium), structuring | cleared | **settled** |
+| TXN004 | 500.00 EUR | validated | 40 (medium), unusual timing + off-hours API | cleared | **settled** |
+| TXN005 | 75 000.00 USD | validated | 60 (high), review required | held | **held** |
+| TXN006 | 200.00 XYZ | **rejected** — `unknown_currency:XYZ` | — | — | **rejected** |
+| TXN007 | −100.00 GBP | **rejected** — `non_positive_amount` | — | — | **rejected** |
+| TXN008 | 3 200.00 USD | validated | 0 (low) | cleared | **settled** |
+[exit code: 0]
+

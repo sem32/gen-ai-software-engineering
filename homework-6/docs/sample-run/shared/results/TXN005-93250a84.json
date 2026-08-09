@@ -1,0 +1,78 @@
+{
+  "message_id": "93250a84-eec2-4b29-9827-6b949b1bc6bb",
+  "timestamp": "2026-08-09T22:54:29Z",
+  "source_agent": "compliance_checker",
+  "target_agent": "pipeline_results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN005",
+    "timestamp": "2026-03-16T10:00:00Z",
+    "source_account": "****1005",
+    "destination_account": "****6600",
+    "amount": "75000.00",
+    "currency": "USD",
+    "transaction_type": "wire_transfer",
+    "description": "[redacted]",
+    "metadata": {
+      "channel": "branch",
+      "country": "US"
+    },
+    "validation": {
+      "agent": "transaction_validator",
+      "valid": true,
+      "reasons": [],
+      "checked_at": "2026-08-09T22:54:29Z"
+    },
+    "status": "held",
+    "fraud": {
+      "agent": "fraud_detector",
+      "risk_score": 60,
+      "risk_level": "high",
+      "review_required": true,
+      "usd_equivalent": "75000.00",
+      "triggered_rules": [
+        {
+          "code": "high_value",
+          "points": 40,
+          "reason": "at or above the 10,000 USD reporting threshold"
+        },
+        {
+          "code": "very_high_value",
+          "points": 20,
+          "reason": "at or above 50,000 USD"
+        }
+      ]
+    },
+    "compliance": {
+      "agent": "compliance_checker",
+      "decision": "held",
+      "ctr_required": true,
+      "hold_reasons": [
+        "fraud_review_required"
+      ],
+      "checks": [
+        {
+          "code": "ctr_threshold",
+          "passed": true,
+          "note": "75000.00 USD-equivalent; CTR required"
+        },
+        {
+          "code": "sanctions",
+          "passed": true,
+          "note": "US is not on the sanctions list"
+        },
+        {
+          "code": "watchlist",
+          "passed": true,
+          "note": "destination account is not on the watchlist"
+        },
+        {
+          "code": "fraud_review",
+          "passed": false,
+          "note": "risk score 60 requires review"
+        }
+      ]
+    },
+    "hold_reason": "fraud_review_required"
+  }
+}

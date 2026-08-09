@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "pipeline-status": {
+      "type": "stdio",
+      "command": "./homework-6/.venv/bin/python",
+      "args": ["./homework-6/mcp/server.py"]
+    }
+  }
+}

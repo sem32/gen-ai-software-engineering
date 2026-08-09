@@ -1,0 +1,26 @@
+$ .venv/bin/pytest
+.............................................................................................................. [ 47%]
+.............................................................................................................. [ 94%]
+............                                                                                                   [100%]
+=================================================== tests coverage ===================================================
+__________________________________ coverage: platform darwin, python 3.14.2-final-0 __________________________________
+
+Name                              Stmts   Miss  Cover   Missing
+---------------------------------------------------------------
+agents/__init__.py                   10      0   100%
+agents/base.py                       43      0   100%
+agents/compliance_checker.py         64      0   100%
+agents/fraud_detector.py             97      0   100%
+agents/protocol.py                  195      0   100%
+agents/reporting_agent.py            91      0   100%
+agents/results_store.py              37      0   100%
+agents/settlement_processor.py       48      0   100%
+agents/transaction_validator.py     112      0   100%
+integrator.py                        84      2    98%   24, 167
+mcp/server.py                        21      2    90%   26, 64
+---------------------------------------------------------------
+TOTAL                               802      4    99%
+Coverage JSON written to file coverage.json
+232 passed in 2.72s
+[exit code: 0]
+
