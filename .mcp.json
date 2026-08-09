@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "./homework-5",
+        "./homework-2"
+      ]
+    },
+    "jira": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    },
+    "lorem-custom": {
+      "type": "stdio",
+      "command": "./homework-5/.venv/bin/python",
+      "args": [
+        "./homework-5/custom-mcp-server/server.py"
+      ]
+    }
+  }
+}
