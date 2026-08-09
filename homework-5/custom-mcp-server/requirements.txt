@@ -1,0 +1,3 @@
+# Custom MCP server dependencies (Homework 5, Task 4)
+# Install with:  pip install -r custom-mcp-server/requirements.txt
+fastmcp>=3.4.6
