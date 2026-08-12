@@ -1,0 +1,78 @@
+{
+  "name": "policy-default",
+  "version": "1.0",
+  "description": "Additive routing policy. Assigns priority, SLA, tags and approval flags and deliberately touches no monetary field, so a default run reproduces specification.md §8 exactly (guardrail IN-8).",
+  "defaults": {
+    "priority": "standard",
+    "sla_hours": 24
+  },
+  "rules": [
+    {
+      "id": "express_small_low_risk",
+      "description": "Small, low-risk transaction — fast lane, 4 hour SLA.",
+      "order": 10,
+      "when": {
+        "all": [
+          { "fact": "usd_amount", "op": "<", "value": "2000" },
+          { "fact": "risk_level", "op": "==", "value": "low" }
+        ]
+      },
+      "then": {
+        "set": { "priority": "express", "sla_hours": 4 },
+        "tags": ["fast-lane"]
+      }
+    },
+    {
+      "id": "wire_transfer_handling",
+      "description": "Wires get a tighter operational SLA than book transfers.",
+      "order": 20,
+      "when": { "fact": "transaction_type", "op": "==", "value": "wire_transfer" },
+      "then": {
+        "set": { "sla_hours": 12 },
+        "tags": ["wire"]
+      }
+    },
+    {
+      "id": "ctr_reporting_duty",
+      "description": "A Currency Transaction Report is due — shorten the SLA and require a second pair of eyes on the filing.",
+      "order": 30,
+      "when": { "fact": "ctr_required", "op": "is_true" },
+      "then": {
+        "set": { "sla_hours": 8, "dual_approval_required": true },
+        "tags": ["ctr-filed"]
+      }
+    },
+    {
+      "id": "elevated_risk_review",
+      "description": "Medium risk still settles automatically, but it is queued behind clean traffic and kept for a longer review window.",
+      "order": 40,
+      "when": { "fact": "risk_level", "op": "==", "value": "medium" },
+      "then": {
+        "set": { "priority": "deferred", "sla_hours": 48 },
+        "tags": ["manual-check"]
+      }
+    },
+    {
+      "id": "cross_border_tag",
+      "description": "Tag cross-border flow for the corridor report.",
+      "order": 50,
+      "when": { "fact": "is_cross_border", "op": "is_true" },
+      "then": { "tags": ["cross-border"] }
+    },
+    {
+      "id": "structuring_watch",
+      "description": "The fraud detector saw a structuring pattern — tag it for the analyst queue without blocking.",
+      "order": 60,
+      "when": { "fact": "fraud_rules", "op": "contains", "value": "structuring" },
+      "then": { "tags": ["structuring-watch"] }
+    },
+    {
+      "id": "watchlist_corridor_disabled",
+      "description": "Kept disabled on purpose: demonstrates that a disabled rule is still validated at load time but never fires.",
+      "enabled": false,
+      "order": 70,
+      "when": { "fact": "destination_account", "op": "matches", "value": "\\*{4}42\\d{2}" },
+      "then": { "tags": ["watchlist-corridor"] }
+    }
+  ]
+}

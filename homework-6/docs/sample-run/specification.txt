@@ -1,0 +1,61 @@
+> /write-spec multi-agent banking transaction pipeline
+
+  Produced homework-6/specification.md and homework-6/agents.md following
+  .claude/commands/write-spec.md: high-level objective, mid-level objectives
+  (MO-*), implementation notes, context, low-level tasks (T-0..T-9) with a
+  prompt / file / function / details / acceptance block each, guardrails (IN-*)
+  and edge cases (EC-*).
+
+$ .venv/bin/python -c "<python snippet>"
+# Multi-Agent Banking Transaction Pipeline — Specification
+## 0. Requirements intake and traceability
+## 1. High-Level Objective
+## 2. Mid-Level Objectives
+## 3. Implementation Notes
+### 3.1 Money
+### 3.2 Currency codes
+### 3.3 Logging and audit trail
+### 3.4 PII
+### 3.5 Message protocol
+### 3.6 Directory contract
+### 3.7 Stack and quality bar
+### 3.8 Rule-pack format (CR-01.1)
+### 3.9 HTTP contract (CR-01.2)
+### 3.10 Demo contract (CR-01.3)
+### 3.11 Service transport (CR-02)
+## 4. Context
+### 4.1 Beginning state
+### 4.2 Ending state
+## 5. Low-Level Tasks
+### T-0. Shared message protocol and audit logging
+### T-1. Transaction Validator
+### T-2. Fraud Detector
+### T-3. Compliance Checker
+### T-4. Settlement Processor
+### T-5. Reporting Agent
+### T-6. Integrator / Orchestrator
+### T-7. Results store and FastMCP server
+### T-8. Test suite and coverage gate
+### T-9. Documentation (Agent 4)
+### T-10. Declarative rule engine
+### T-11. Policy engine agent
+### T-12. Settlement honours policy overrides
+### T-13. REST API gateway
+### T-14. Demo script
+### T-15. HTML presentation
+### T-16. Tests for the new surfaces
+### T-17. Agents as services
+### T-18. REST between services
+### T-19. Gateway over the mesh, and the interactive presentation
+## 6. Guardrails (IN-\*)
+## 7. Edge cases (EC-\*)
+## 8. Expected outcome for the supplied sample data
+## 8b. Expected outcome under `policy-strict` (CR-01.1)
+## 9. Definition of done
+
+--- section 8, the regression expectation asserted in tests ---
+| Transaction | Amount | Validator | Risk score | Compliance | Terminal status |
+|---|---|---|---|---|---|
+| TXN001 | 1 500.00 USD | validated | 0 (low) | cleared | **settled** |
+
+... (9 more lines — full transcript in docs/sample-run/specification.txt)

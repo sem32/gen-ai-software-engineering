@@ -1,0 +1,82 @@
+{
+  "message_id": "3a2bb1bf-115b-4346-848e-edda3b54853a",
+  "timestamp": "2026-08-09T22:54:29Z",
+  "source_agent": "settlement_processor",
+  "target_agent": "pipeline_results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN003",
+    "timestamp": "2026-03-16T09:30:00Z",
+    "source_account": "****1003",
+    "destination_account": "****9999",
+    "amount": "9999.99",
+    "currency": "USD",
+    "transaction_type": "transfer",
+    "description": "[redacted]",
+    "metadata": {
+      "channel": "online",
+      "country": "US"
+    },
+    "validation": {
+      "agent": "transaction_validator",
+      "valid": true,
+      "reasons": [],
+      "checked_at": "2026-08-09T22:54:29Z"
+    },
+    "status": "settled",
+    "fraud": {
+      "agent": "fraud_detector",
+      "risk_score": 35,
+      "risk_level": "medium",
+      "review_required": false,
+      "usd_equivalent": "9999.99",
+      "triggered_rules": [
+        {
+          "code": "structuring",
+          "points": 35,
+          "reason": "just below the 10,000 USD reporting threshold"
+        }
+      ]
+    },
+    "compliance": {
+      "agent": "compliance_checker",
+      "decision": "cleared",
+      "ctr_required": false,
+      "hold_reasons": [],
+      "checks": [
+        {
+          "code": "ctr_threshold",
+          "passed": true,
+          "note": "9999.99 USD-equivalent; CTR not required"
+        },
+        {
+          "code": "sanctions",
+          "passed": true,
+          "note": "US is not on the sanctions list"
+        },
+        {
+          "code": "watchlist",
+          "passed": true,
+          "note": "destination account is not on the watchlist"
+        },
+        {
+          "code": "fraud_review",
+          "passed": true,
+          "note": "risk level medium clears automatically"
+        }
+      ]
+    },
+    "settlement": {
+      "agent": "settlement_processor",
+      "settlement_id": "STL-TXN003",
+      "currency": "USD",
+      "gross_amount": "9999.99",
+      "fee": "25.00",
+      "net_amount": "9974.99",
+      "fee_rate": "0.0025",
+      "value_date": "2026-03-17",
+      "business_day_lag": 1,
+      "settled_at": "2026-08-09T22:54:29Z"
+    }
+  }
+}

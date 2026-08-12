@@ -1,0 +1,19 @@
+#!/bin/sh
+# Git pre-push hook — the same coverage gate the Claude Code hook enforces (spec task T-8).
+#
+# Install it with:
+#     ln -sf ../../homework-6/scripts/pre-push .git/hooks/pre-push
+#
+# Override the floor for one push with:  COVERAGE_MIN=90 git push
+set -e
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+GATE="$REPO_ROOT/homework-6/scripts/coverage_gate.py"
+PYTHON="$REPO_ROOT/homework-6/.venv/bin/python"
+[ -x "$PYTHON" ] || PYTHON=python3
+
+echo "[pre-push] running the homework-6 coverage gate..."
+"$PYTHON" "$GATE" --simulate-push || {
+    echo "[pre-push] push rejected by the coverage gate" >&2
+    exit 1
+}

@@ -1,0 +1,76 @@
+{
+  "message_id": "64813d41-43e9-4628-a0b4-bfe73e2f1958",
+  "timestamp": "2026-08-09T22:54:29Z",
+  "source_agent": "settlement_processor",
+  "target_agent": "pipeline_results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN001",
+    "timestamp": "2026-03-16T09:00:00Z",
+    "source_account": "****1001",
+    "destination_account": "****2001",
+    "amount": "1500.00",
+    "currency": "USD",
+    "transaction_type": "transfer",
+    "description": "[redacted]",
+    "metadata": {
+      "channel": "online",
+      "country": "US"
+    },
+    "validation": {
+      "agent": "transaction_validator",
+      "valid": true,
+      "reasons": [],
+      "checked_at": "2026-08-09T22:54:29Z"
+    },
+    "status": "settled",
+    "fraud": {
+      "agent": "fraud_detector",
+      "risk_score": 0,
+      "risk_level": "low",
+      "review_required": false,
+      "usd_equivalent": "1500.00",
+      "triggered_rules": []
+    },
+    "compliance": {
+      "agent": "compliance_checker",
+      "decision": "cleared",
+      "ctr_required": false,
+      "hold_reasons": [],
+      "checks": [
+        {
+          "code": "ctr_threshold",
+          "passed": true,
+          "note": "1500.00 USD-equivalent; CTR not required"
+        },
+        {
+          "code": "sanctions",
+          "passed": true,
+          "note": "US is not on the sanctions list"
+        },
+        {
+          "code": "watchlist",
+          "passed": true,
+          "note": "destination account is not on the watchlist"
+        },
+        {
+          "code": "fraud_review",
+          "passed": true,
+          "note": "risk level low clears automatically"
+        }
+      ]
+    },
+    "settlement": {
+      "agent": "settlement_processor",
+      "settlement_id": "STL-TXN001",
+      "currency": "USD",
+      "gross_amount": "1500.00",
+      "fee": "3.75",
+      "net_amount": "1496.25",
+      "fee_rate": "0.0025",
+      "value_date": "2026-03-17",
+      "business_day_lag": 1,
+      "settled_at": "2026-08-09T22:54:29Z"
+    }
+  }
+}

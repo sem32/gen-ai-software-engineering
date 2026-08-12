@@ -1,0 +1,43 @@
+Each agent runs as its own HTTP service and POSTs to its successor (choreography).
+The files stay as the journal: audit trail plus the terminal result.
+
+$ .venv/bin/python -c "<python snippet>"
+service mesh (one process per agent, REST between them):
+  1. transaction_validator    http://127.0.0.1:51253  -> fraud_detector
+  2. fraud_detector           http://127.0.0.1:51254  -> compliance_checker
+  3. compliance_checker       http://127.0.0.1:51255  -> policy_engine
+  4. policy_engine            http://127.0.0.1:51256  -> settlement_processor
+  5. settlement_processor     http://127.0.0.1:51257  -> results
+
+  TXN      HTTP  VERDICT    HOPS
+  ----------------------------------------------------------------------------------
+  TXN001   200   settled    transaction -> fraud -> compliance -> policy -> settlement
+  TXN002   200   settled    transaction -> fraud -> compliance -> policy -> settlement
+  TXN003   200   settled    transaction -> fraud -> compliance -> policy -> settlement
+  TXN004   200   settled    transaction -> fraud -> compliance -> policy -> settlement
+  TXN005   409   held       transaction -> fraud -> compliance
+  TXN006   422   rejected   transaction
+  TXN007   422   rejected   transaction
+  TXN008   200   settled    transaction -> fraud -> compliance -> policy -> settlement
+
+  every hop is journalled to shared/audit/audit-log.jsonl; the last hop writes the result file
+[transaction_validator] GET /health "GET /health HTTP/1.1" 200 -
+[fraud_detector] GET /health "GET /health HTTP/1.1" 200 -
+[compliance_checker] GET /health "GET /health HTTP/1.1" 200 -
+[policy_engine] GET /health "GET /health HTTP/1.1" 200 -
+[settlement_processor] GET /health "GET /health HTTP/1.1" 200 -
+[settlement_processor] POST /process "POST /process HTTP/1.1" 200 -
+[policy_engine] POST /process "POST /process HTTP/1.1" 200 -
+[compliance_checker] POST /process "POST /process HTTP/1.1" 200 -
+[fraud_detector] POST /process "POST /process HTTP/1.1" 200 -
+[transaction_validator] POST /process "POST /process HTTP/1.1" 200 -
+[settlement_processor] POST /process "POST /process HTTP/1.1" 200 -
+[policy_engine] POST /process "POST /process HTTP/1.1" 200 -
+[compliance_checker] POST /process "POST /process HTTP/1.1" 200 -
+[fraud_detector] POST /process "POST /process HTTP/1.1" 200 -
+[transaction_validator] POST /process "POST /process HTTP/1.1" 200 -
+[settlement_processor] POST /process "POST /process HTTP/1.1" 200 -
+[policy_engine] POST /process "POST /process HTTP/1.1" 200 -
+[compliance_checker] POST /process "POST /process HTTP/1.1" 200 -
+
+... (23 more lines — full transcript in docs/sample-run/rest-chain.txt)

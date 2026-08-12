@@ -1,0 +1,59 @@
+> /run-pipeline
+
+  Running the multi-agent banking pipeline end-to-end, per
+  .claude/commands/run-pipeline.md:
+    1. check sample-transactions.json exists
+    2. clear shared/ (integrator.py resets it by default)
+    3. run the pipeline
+    4. summarise shared/results/
+    5. report everything that did not settle
+
+$ .venv/bin/python -c import json,pathlib;d=json.loads(pathlib.Path('sample-transactions.json').read_text());print(f'sample-transactions.json found: {len(d)} records')
+sample-transactions.json found: 8 records
+[exit code: 0]
+
+$ .venv/bin/python integrator.py
+[integrator] workspace  : /Users/sem/git/education/gen-ai-software-engineering/homework-6/shared
+[integrator] input file  : /Users/sem/git/education/gen-ai-software-engineering/homework-6/sample-transactions.json
+[integrator] rule pack   : policy-default
+[integrator] ingested    : 8 transaction(s) -> shared/input
+[transaction_validator] processed 8 message(s), 2 terminal, 6 forwarded
+[fraud_detector] processed 6 message(s), 0 terminal, 6 forwarded
+[compliance_checker] processed 6 message(s), 1 terminal, 5 forwarded
+[policy_engine] processed 5 message(s), 0 terminal, 5 forwarded
+[settlement_processor] processed 5 message(s), 5 terminal, 0 forwarded
+
+PIPELINE RESULTS
+================================================================================================
+TRANSACTION  STATUS           AMOUNT CUR  RISK        DETAIL
+------------------------------------------------------------------------------------------------
+TXN001       settled         1500.00 USD  0 (low)     net 1496.25 value date 2026-03-17
+TXN002       settled        25000.00 USD  40 (medium) net 24975.00 value date 2026-03-18
+TXN003       settled         9999.99 USD  35 (medium) net 9974.99 value date 2026-03-17
+TXN004       settled          500.00 EUR  40 (medium) net 498.75 value date 2026-03-17
+TXN005       held           75000.00 USD  60 (high)   fraud_review_required
+TXN006       rejected         200.00 XYZ  -           unknown_currency:XYZ
+TXN007       rejected        -100.00 GBP  -           non_positive_amount
+TXN008       settled         3200.00 USD  0 (low)     net 3192.00 value date 2026-03-17
+------------------------------------------------------------------------------------------------
+total=8  held=1  rejected=2  settled=5
+EUR: settled_fees=1.25  settled_gross=500.00  settled_net=498.75
+USD: held=75000.00  settled_fees=61.75  settled_gross=39699.99  settled_net=39638.24
+reconciled=yes  pending=0  quarantined=0
+================================================================================================
+[exit code: 0]
+
+$ .venv/bin/python -c import pathlib;print('shared/results/:', len(list(pathlib.Path('shared/results').glob('*.json'))), 'files');print(pathlib.Path('shared/reports/pipeline-summary.md').read_text().split('## Rejected')[0])
+shared/results/: 8 files
+# Pipeline run summary
+
+- Generated at: `2026-08-12T17:05:07Z`
+- Transactions processed: **8**
+
+## Outcomes
+
+| Status | Count |
+|---|---|
+| held | 1 |
+
+... (53 more lines — full transcript in docs/sample-run/skill-run-pipeline.txt)

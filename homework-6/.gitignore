@@ -1,0 +1,13 @@
+# Runtime workspace — recreated by every pipeline run. A committed copy of one run
+# lives in docs/sample-run/ instead.
+# (anchored — docs/sample-run/shared/ is committed on purpose)
+/shared/
+
+# Environment and tooling artefacts
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+coverage.json
+htmlcov/

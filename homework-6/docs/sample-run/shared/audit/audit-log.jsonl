@@ -1,0 +1,34 @@
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "integrator", "transaction_id": "TXN001", "outcome": "ingested", "detail": {"target_agent": "transaction_validator"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "integrator", "transaction_id": "TXN002", "outcome": "ingested", "detail": {"target_agent": "transaction_validator"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "integrator", "transaction_id": "TXN003", "outcome": "ingested", "detail": {"target_agent": "transaction_validator"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "integrator", "transaction_id": "TXN004", "outcome": "ingested", "detail": {"target_agent": "transaction_validator"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "integrator", "transaction_id": "TXN005", "outcome": "ingested", "detail": {"target_agent": "transaction_validator"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "integrator", "transaction_id": "TXN006", "outcome": "ingested", "detail": {"target_agent": "transaction_validator"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "integrator", "transaction_id": "TXN007", "outcome": "ingested", "detail": {"target_agent": "transaction_validator"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "integrator", "transaction_id": "TXN008", "outcome": "ingested", "detail": {"target_agent": "transaction_validator"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "transaction_validator", "transaction_id": "TXN001", "outcome": "validated", "detail": {"terminal": false, "next_agent": "fraud_detector"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "transaction_validator", "transaction_id": "TXN002", "outcome": "validated", "detail": {"terminal": false, "next_agent": "fraud_detector"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "transaction_validator", "transaction_id": "TXN003", "outcome": "validated", "detail": {"terminal": false, "next_agent": "fraud_detector"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "transaction_validator", "transaction_id": "TXN004", "outcome": "validated", "detail": {"terminal": false, "next_agent": "fraud_detector"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "transaction_validator", "transaction_id": "TXN005", "outcome": "validated", "detail": {"terminal": false, "next_agent": "fraud_detector"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "transaction_validator", "transaction_id": "TXN006", "outcome": "rejected", "detail": {"terminal": true, "next_agent": "pipeline_results"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "transaction_validator", "transaction_id": "TXN007", "outcome": "rejected", "detail": {"terminal": true, "next_agent": "pipeline_results"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "transaction_validator", "transaction_id": "TXN008", "outcome": "validated", "detail": {"terminal": false, "next_agent": "fraud_detector"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "fraud_detector", "transaction_id": "TXN001", "outcome": "fraud_cleared", "detail": {"terminal": false, "next_agent": "compliance_checker"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "fraud_detector", "transaction_id": "TXN002", "outcome": "flagged_for_review", "detail": {"terminal": false, "next_agent": "compliance_checker"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "fraud_detector", "transaction_id": "TXN003", "outcome": "fraud_cleared", "detail": {"terminal": false, "next_agent": "compliance_checker"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "fraud_detector", "transaction_id": "TXN004", "outcome": "fraud_cleared", "detail": {"terminal": false, "next_agent": "compliance_checker"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "fraud_detector", "transaction_id": "TXN005", "outcome": "flagged_for_review", "detail": {"terminal": false, "next_agent": "compliance_checker"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "fraud_detector", "transaction_id": "TXN008", "outcome": "fraud_cleared", "detail": {"terminal": false, "next_agent": "compliance_checker"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "compliance_checker", "transaction_id": "TXN001", "outcome": "compliance_cleared", "detail": {"terminal": false, "next_agent": "settlement_processor"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "compliance_checker", "transaction_id": "TXN002", "outcome": "compliance_cleared", "detail": {"terminal": false, "next_agent": "settlement_processor"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "compliance_checker", "transaction_id": "TXN003", "outcome": "compliance_cleared", "detail": {"terminal": false, "next_agent": "settlement_processor"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "compliance_checker", "transaction_id": "TXN004", "outcome": "compliance_cleared", "detail": {"terminal": false, "next_agent": "settlement_processor"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "compliance_checker", "transaction_id": "TXN005", "outcome": "held", "detail": {"terminal": true, "next_agent": "pipeline_results"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "compliance_checker", "transaction_id": "TXN008", "outcome": "compliance_cleared", "detail": {"terminal": false, "next_agent": "settlement_processor"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "settlement_processor", "transaction_id": "TXN001", "outcome": "settled", "detail": {"terminal": true, "next_agent": "pipeline_results"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "settlement_processor", "transaction_id": "TXN002", "outcome": "settled", "detail": {"terminal": true, "next_agent": "pipeline_results"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "settlement_processor", "transaction_id": "TXN003", "outcome": "settled", "detail": {"terminal": true, "next_agent": "pipeline_results"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "settlement_processor", "transaction_id": "TXN004", "outcome": "settled", "detail": {"terminal": true, "next_agent": "pipeline_results"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "settlement_processor", "transaction_id": "TXN008", "outcome": "settled", "detail": {"terminal": true, "next_agent": "pipeline_results"}}
+{"timestamp": "2026-08-09T22:54:29Z", "agent": "reporting_agent", "transaction_id": "ALL", "outcome": "summary_written", "detail": {"total": 8, "by_status": {"held": 1, "rejected": 2, "settled": 5}}}

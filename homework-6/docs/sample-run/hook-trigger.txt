@@ -1,0 +1,19 @@
+PreToolUse hook on Bash, registered in .claude/settings.json:
+  "command": "python3 $CLAUDE_PROJECT_DIR/homework-6/scripts/coverage_gate.py"
+Exit code 2 blocks the tool call and returns the reason to the model.
+
+$ echo '{"tool_name":"Bash","tool_input":{"command":"ls -la"}}' \
+    | .venv/bin/python scripts/coverage_gate.py
+[exit code: 0]
+
+$ echo '{"tool_name":"Bash","tool_input":{"command":"git push origin homework-6"}}' \
+    | .venv/bin/python scripts/coverage_gate.py
+[coverage-gate] Coverage gate PASSED: 90.49% >= 80% required.
+[exit code: 0]
+
+$ echo '{"tool_name":"Bash","tool_input":{"command":"git push origin homework-6"}}' \
+    | .venv/bin/python scripts/coverage_gate.py --threshold 99.9
+[coverage-gate] Coverage gate FAILED: 90.49% < 99.9% required.
+Push blocked. Add tests, then run `python scripts/coverage_gate.py` again.
+[exit code: 2]
+

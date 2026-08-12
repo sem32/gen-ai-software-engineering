@@ -1,0 +1,123 @@
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.6                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                  🖥  Server:      pipeline-status, 3.4.6                      │
+│                  🚀 Deploy free: https://horizon.prefect.io                  │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[08/10/26 00:54:31] INFO     Starting MCP server                transport.py:241
+                             'pipeline-status' with transport                   
+                             'stdio'                                            
+$ /Users/sem/git/education/gen-ai-software-engineering/homework-6/.venv/bin/python /Users/sem/git/education/gen-ai-software-engineering/homework-6/mcp/server.py
+connecting over stdio (MCP JSON-RPC)...
+
+=== initialize / capabilities ===================================
+  tool     : get_transaction_status(transaction_id)
+  tool     : list_pipeline_results()
+  resource : pipeline://summary
+
+=== tools/call get_transaction_status TXN001 ====================
+{
+  "found": true,
+  "transaction_id": "TXN001",
+  "status": "settled",
+  "amount": "1500.00",
+  "currency": "USD",
+  "transaction_type": "transfer",
+  "risk_score": 0,
+  "risk_level": "low",
+  "review_required": false,
+  "ctr_required": false,
+  "hold_reasons": [],
+  "rejection_reasons": [],
+  "settlement_id": "STL-TXN001",
+  "fee": "3.75",
+  "net_amount": "1496.25",
+  "value_date": "2026-03-17",
+  "finalised_by": "settlement_processor",
+  "finalised_at": "2026-08-09T22:54:29Z"
+}
+
+=== tools/call get_transaction_status TXN005 (held) =============
+{
+  "found": true,
+  "transaction_id": "TXN005",
+  "status": "held",
+  "amount": "75000.00",
+  "currency": "USD",
+  "transaction_type": "wire_transfer",
+  "risk_score": 60,
+  "risk_level": "high",
+  "review_required": true,
+  "ctr_required": true,
+  "hold_reasons": [
+    "fraud_review_required"
+  ],
+  "rejection_reasons": [],
+  "settlement_id": null,
+  "fee": null,
+  "net_amount": null,
+  "value_date": null,
+  "finalised_by": "compliance_checker",
+  "finalised_at": "2026-08-09T22:54:29Z"
+}
+
+=== tools/call get_transaction_status TXN999 (unknown) ==========
+{
+  "found": false,
+  "transaction_id": "TXN999",
+  "message": "No result for 'TXN999' in shared/results. Run the pipeline first (`python integrator.py`)."
+}
+
+=== tools/call list_pipeline_results ============================
+{
+  "total": 8,
+  "by_status": {
+    "held": 1,
+    "rejected": 2,
+    "settled": 5
+  }
+}
+  TXN001  settled      1500.00 USD  risk=0
+  TXN002  settled     25000.00 USD  risk=40
+  TXN003  settled      9999.99 USD  risk=35
+  TXN004  settled       500.00 EUR  risk=40
+  TXN005  held        75000.00 USD  risk=60
+  TXN006  rejected      200.00 XYZ  risk=None
+  TXN007  rejected     -100.00 GBP  risk=None
+  TXN008  settled      3200.00 USD  risk=0
+
+=== resources/read pipeline://summary ===========================
+# Pipeline run summary
+
+- Generated at: `2026-08-09T22:54:29Z`
+- Transactions processed: **8**
+
+## Outcomes
+
+| Status | Count |
+|---|---|
+| held | 1 |
+| rejected | 2 |
+| settled | 5 |
+
+## Risk levels
+
+| Level | Count |
+|---|---|
+| high | 1 |
+  ... (truncated)
+
+All MCP calls completed successfully.

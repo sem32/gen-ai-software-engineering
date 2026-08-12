@@ -1,0 +1,82 @@
+{
+  "message_id": "fdb394d8-fc90-45e6-b4a5-7ed57fb519e2",
+  "timestamp": "2026-08-09T22:54:29Z",
+  "source_agent": "settlement_processor",
+  "target_agent": "pipeline_results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN002",
+    "timestamp": "2026-03-16T09:15:00Z",
+    "source_account": "****1002",
+    "destination_account": "****3001",
+    "amount": "25000.00",
+    "currency": "USD",
+    "transaction_type": "wire_transfer",
+    "description": "[redacted]",
+    "metadata": {
+      "channel": "branch",
+      "country": "US"
+    },
+    "validation": {
+      "agent": "transaction_validator",
+      "valid": true,
+      "reasons": [],
+      "checked_at": "2026-08-09T22:54:29Z"
+    },
+    "status": "settled",
+    "fraud": {
+      "agent": "fraud_detector",
+      "risk_score": 40,
+      "risk_level": "medium",
+      "review_required": true,
+      "usd_equivalent": "25000.00",
+      "triggered_rules": [
+        {
+          "code": "high_value",
+          "points": 40,
+          "reason": "at or above the 10,000 USD reporting threshold"
+        }
+      ]
+    },
+    "compliance": {
+      "agent": "compliance_checker",
+      "decision": "cleared",
+      "ctr_required": true,
+      "hold_reasons": [],
+      "checks": [
+        {
+          "code": "ctr_threshold",
+          "passed": true,
+          "note": "25000.00 USD-equivalent; CTR required"
+        },
+        {
+          "code": "sanctions",
+          "passed": true,
+          "note": "US is not on the sanctions list"
+        },
+        {
+          "code": "watchlist",
+          "passed": true,
+          "note": "destination account is not on the watchlist"
+        },
+        {
+          "code": "fraud_review",
+          "passed": true,
+          "note": "risk level medium clears automatically"
+        }
+      ]
+    },
+    "settlement": {
+      "agent": "settlement_processor",
+      "settlement_id": "STL-TXN002",
+      "currency": "USD",
+      "gross_amount": "25000.00",
+      "fee": "25.00",
+      "net_amount": "24975.00",
+      "fee_rate": "0.0025",
+      "value_date": "2026-03-18",
+      "business_day_lag": 2,
+      "settled_at": "2026-08-09T22:54:29Z"
+    }
+  }
+}

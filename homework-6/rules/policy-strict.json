@@ -1,0 +1,82 @@
+{
+  "name": "policy-strict",
+  "version": "1.0",
+  "description": "Tightened policy for an elevated-risk period. Holds structuring candidates and off-hours automated submissions, and applies a surcharge above 20,000 USD-equivalent. Same code, different data — see specification.md §8b.",
+  "defaults": {
+    "priority": "standard",
+    "sla_hours": 12
+  },
+  "rules": [
+    {
+      "id": "strict_structuring_hold",
+      "description": "Amounts parked just under the reporting threshold go to a human, not to settlement.",
+      "order": 10,
+      "when": { "fact": "fraud_rules", "op": "contains", "value": "structuring" },
+      "then": {
+        "hold": "structuring_manual_review",
+        "tags": ["structuring", "manual-review"]
+      }
+    },
+    {
+      "id": "strict_off_hours_hold",
+      "description": "Automated channel outside business hours is held during an elevated-risk period.",
+      "order": 20,
+      "when": { "fact": "fraud_rules", "op": "contains", "value": "off_hours_api" },
+      "then": {
+        "hold": "off_hours_automation_review",
+        "tags": ["off-hours", "manual-review"]
+      }
+    },
+    {
+      "id": "strict_sanction_adjacent_hold",
+      "description": "Cross-border traffic on an automated channel is held. Nothing in the bundled sample triggers this; it exists so the pack shows a rule that legitimately does not fire.",
+      "order": 25,
+      "when": {
+        "all": [
+          { "fact": "is_cross_border", "op": "is_true" },
+          { "fact": "channel", "op": "in", "value": ["api", "unknown"] }
+        ]
+      },
+      "then": { "hold": "cross_border_automation_review" }
+    },
+    {
+      "id": "strict_high_value_surcharge",
+      "description": "Above 20,000 USD-equivalent the fee moves to 35 bp with a 100.00 cap, and the booking needs dual approval.",
+      "order": 30,
+      "when": { "fact": "usd_amount", "op": ">=", "value": "20000" },
+      "then": {
+        "set": {
+          "fee_rate": "0.0035",
+          "fee_cap": "100.00",
+          "dual_approval_required": true
+        },
+        "tags": ["surcharge"]
+      }
+    },
+    {
+      "id": "strict_express_small_low_risk",
+      "description": "Small and clean still goes fast — strict about risk, not about everything.",
+      "order": 40,
+      "when": {
+        "all": [
+          { "fact": "usd_amount", "op": "<", "value": "2000" },
+          { "fact": "risk_level", "op": "==", "value": "low" }
+        ]
+      },
+      "then": {
+        "set": { "priority": "express", "sla_hours": 4 },
+        "tags": ["fast-lane"]
+      }
+    },
+    {
+      "id": "strict_medium_risk_dual_approval",
+      "description": "Anything medium risk that still settles needs two approvers and is deprioritised.",
+      "order": 50,
+      "when": { "fact": "risk_level", "op": "==", "value": "medium" },
+      "then": {
+        "set": { "priority": "deferred", "dual_approval_required": true, "sla_hours": 24 },
+        "tags": ["manual-check"]
+      }
+    }
+  ]
+}

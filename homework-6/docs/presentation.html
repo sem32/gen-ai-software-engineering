@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quorum — Multi-Agent Banking Pipeline</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%8F%A6%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --panel-2: #f0f2f5;
+  --ink: #16181d;
+  --ink-2: #565b66;
+  --ink-3: #868d99;
+  --line: #dfe3e9;
+  --accent: #2f6df6;
+  --accent-soft: #e6efff;
+  --ok: #17803d;
+  --ok-soft: #e4f6ea;
+  --warn: #a8620a;
+  --warn-soft: #fdf0dd;
+  --bad: #c0322b;
+  --bad-soft: #fdeceb;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(16,18,29,.06), 0 8px 24px -12px rgba(16,18,29,.18);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-2: #1c222b;
+    --ink: #e6edf3;
+    --ink-2: #9aa4b2;
+    --ink-3: #6e7781;
+    --line: #2a313c;
+    --accent: #6ea8fe;
+    --accent-soft: #14243d;
+    --ok: #4ec97b;
+    --ok-soft: #10281a;
+    --warn: #e3b341;
+    --warn-soft: #2a2113;
+    --bad: #ff7b72;
+    --bad-soft: #2d1a1a;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px -16px rgba(0,0,0,.7);
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+code, kbd { font-family: var(--mono); font-size: .89em; }
+
+/* ---------- chrome ---------- */
+header.top {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 24px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { font-weight: 700; letter-spacing: -.01em; }
+.brand span { color: var(--ink-3); font-weight: 500; }
+nav.dots { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+nav.dots button {
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink-2);
+  font: 500 12px/1 var(--sans); padding: 6px 10px; border-radius: 999px; cursor: pointer;
+}
+nav.dots button[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+nav.dots button:hover { border-color: var(--accent); }
+
+main { max-width: 1180px; margin: 0 auto; padding: 0 24px 96px; }
+section { padding: 56px 0 32px; border-bottom: 1px solid var(--line); scroll-margin-top: 64px; }
+section:last-child { border-bottom: 0; }
+h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-spacing: -.02em; margin: 0 0 12px; }
+h2 { font-size: clamp(22px, 3vw, 30px); letter-spacing: -.015em; margin: 0 0 6px; }
+h3 { font-size: 15px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); margin: 28px 0 10px; }
+p { margin: 0 0 14px; max-width: 74ch; color: var(--ink-2); }
+p strong, li strong { color: var(--ink); }
+.lede { font-size: 18px; color: var(--ink-2); max-width: 70ch; }
+.eyebrow { font: 600 12px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.g3 { grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+}
+.card h4 { margin: 0 0 6px; font-size: 15px; }
+.card p { margin: 0; font-size: 14.5px; }
+.stat { font: 700 30px/1 var(--sans); letter-spacing: -.02em; }
+.stat.small { font-size: 22px; }
+.muted { color: var(--ink-3); font-size: 13.5px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.scroll { overflow-x: auto; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px/1.4 var(--sans); text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); }
+td code { color: var(--ink); }
+tbody tr:hover { background: var(--panel-2); }
+
+.pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font: 600 11.5px/1.6 var(--mono); }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.neutral { background: var(--panel-2); color: var(--ink-2); }
+.pill.info { background: var(--accent-soft); color: var(--accent); }
+
+pre {
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.55;
+  margin: 0 0 14px;
+}
+
+/* ---------- flow visual ---------- */
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 18px 0 6px; }
+@media (max-width: 900px) { .flow { grid-template-columns: repeat(2, 1fr); } }
+.node {
+  position: relative; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 12px; text-align: left; transition: all .22s ease;
+}
+.node .idx { font: 700 11px/1 var(--mono); color: var(--ink-3); }
+.node .name { font: 600 13px/1.35 var(--sans); margin: 5px 0 4px; word-break: break-word; }
+.node .state { font: 500 11.5px/1.4 var(--mono); color: var(--ink-3); min-height: 1.4em; }
+.node[data-state="active"] { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-3px); box-shadow: var(--shadow); }
+.node[data-state="done"] { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+.node[data-state="done"] .state { color: var(--ok); }
+.node[data-state="held"] { border-color: color-mix(in srgb, var(--warn) 50%, var(--line)); background: var(--warn-soft); }
+.node[data-state="held"] .state { color: var(--warn); }
+.node[data-state="rejected"] { border-color: color-mix(in srgb, var(--bad) 50%, var(--line)); background: var(--bad-soft); }
+.node[data-state="rejected"] .state { color: var(--bad); }
+.node[data-state="skipped"] { opacity: .42; }
+.node .hopmark {
+  position: absolute; top: 8px; right: 10px; font: 700 10px/1 var(--mono); color: var(--accent); opacity: 0;
+}
+.node[data-state="active"] .hopmark, .node[data-state="done"] .hopmark { opacity: 1; }
+
+.verdict {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--panel); font-size: 14px; min-height: 46px;
+}
+.verdict .big { font: 700 15px/1 var(--mono); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+button.act {
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+  font: 600 13px/1 var(--sans); padding: 9px 13px; border-radius: 8px; cursor: pointer;
+  transition: all .15s ease;
+}
+button.act:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+button.act.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.act.primary:hover:not(:disabled) { filter: brightness(1.08); color: #fff; }
+button.act:disabled { opacity: .5; cursor: not-allowed; }
+input.port {
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+  font: 500 13px/1 var(--mono); padding: 9px 11px; border-radius: 8px; width: 210px;
+}
+.conn { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+
+.logwrap { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
+.logwrap .hd {
+  display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+  border-bottom: 1px solid var(--line); background: var(--panel-2);
+  font: 600 11.5px/1 var(--sans); text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3);
+}
+.log { margin: 0; max-height: 260px; overflow-y: auto; font-family: var(--mono); font-size: 12px; }
+.log .row { display: grid; grid-template-columns: 58px 1fr 52px 62px; gap: 8px; padding: 5px 12px; border-bottom: 1px solid var(--line); }
+.log .row:last-child { border-bottom: 0; }
+.log .row .m { color: var(--ink-3); }
+.log .row .s.ok { color: var(--ok); }
+.log .row .s.warn { color: var(--warn); }
+.log .row .s.bad { color: var(--bad); }
+.log .row .d { color: var(--ink-3); text-align: right; }
+.log .empty { padding: 14px 12px; color: var(--ink-3); font-family: var(--sans); font-size: 13px; }
+
+.banner {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  background: var(--panel); border-radius: 8px; padding: 12px 14px; margin: 0 0 16px; font-size: 14px;
+}
+.banner.live { border-left-color: var(--ok); }
+.banner code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+.banner p { margin: 0; }
+
+ul.tight { margin: 0 0 14px; padding-left: 20px; color: var(--ink-2); max-width: 74ch; }
+ul.tight li { margin-bottom: 6px; }
+.kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+svg .lbl { font: 500 11px var(--mono); fill: var(--ink-2); }
+svg .lbl-s { font: 500 9.5px var(--mono); fill: var(--ink-3); }
+svg .ttl { font: 600 12px var(--sans); fill: var(--ink); }
+footer { color: var(--ink-3); font-size: 13px; padding: 32px 0 0; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">Quorum <span>· Homework 6 capstone</span></div>
+  <nav class="dots" id="nav"></nav>
+</header>
+
+<main>
+
+<!-- ============================================================ -->
+<section id="title">
+  <div class="eyebrow">Multi-agent banking transaction pipeline</div>
+  <h1>Six agents, three transports,<br>one auditable verdict.</h1>
+  <p class="lede">
+    A transaction enters as JSON and leaves with a defensible answer: <strong>settled</strong>,
+    <strong>held</strong> or <strong>rejected</strong> — with every hop written to an append-only
+    journal, every account masked, and every figure explainable down to the rule that produced it.
+  </p>
+  <div class="grid g3" style="margin-top:26px">
+    <div class="card"><div class="stat" id="s-tests">442</div><div class="muted">tests, 92.9% coverage, 80% push gate</div></div>
+    <div class="card"><div class="stat">6</div><div class="muted">agents — each also an HTTP service</div></div>
+    <div class="card"><div class="stat">0</div><div class="muted">runtime dependencies in the pipeline</div></div>
+  </div>
+  <p class="muted" style="margin-top:22px">
+    Team <strong>Quorum</strong> — the minimum number of voices that makes a decision valid.
+    Press <span class="kbd">→</span> or use the chips above to move.
+  </p>
+</section>
+
+<!-- ============================================================ -->
+<section id="problem">
+  <div class="eyebrow">The problem</div>
+  <h2>Money decisions have to survive being questioned</h2>
+  <p>
+    A payments pipeline is judged twice: once when it runs, and once months later when somebody asks
+    <em>why</em> a particular transaction was let through. That second audience shaped every choice here.
+  </p>
+  <div class="grid g2">
+    <div class="card">
+      <h4>Exactness over convenience</h4>
+      <p>Amounts cross the wire as strings and become <code>Decimal</code> exactly once. <code>parse_amount</code>
+      <strong>refuses</strong> a float — including <code>Decimal(1.1)</code>, which silently carries binary error.
+      Rounding is explicit <code>ROUND_HALF_UP</code>, because the library default is banker's rounding.</p>
+    </div>
+    <div class="card">
+      <h4>Fail closed, never fail quiet</h4>
+      <p>A missing country, an absent fraud assessment, an unparseable amount, an unreadable rule pack —
+      every one of them is a <strong>hold</strong>. There is no permissive branch on a decision path.</p>
+    </div>
+    <div class="card">
+      <h4>PII masked by construction</h4>
+      <p>Accounts become <code>****NNNN</code> and descriptions are redacted before anything else sees the
+      record. The audit logger <strong>raises</strong> rather than write an unmasked account — a control, not a lint rule.</p>
+    </div>
+    <div class="card">
+      <h4>Every figure is attributable</h4>
+      <p>A fee carries <code>fee_source</code>; a policy field carries <code>decided_by</code> naming the exact
+      rule that set it. "Why 87.50?" has an answer that fits on one line.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="architecture">
+  <div class="eyebrow">Architecture</div>
+  <h2>The engine, and the three ways in</h2>
+  <p>
+    Five agents were built to exchange JSON <em>files</em>. A sixth agent added configurable policy.
+    Then the transport between them became REST — while the files stayed, demoted from message bus to
+    <strong>journal</strong>: the audit trail and the terminal results.
+  </p>
+
+  <div class="scroll">
+  <svg viewBox="0 0 1080 330" width="100%" height="330" role="img" aria-label="Architecture: a client reaches the gateway, which hands the transaction to the first agent service; each service forwards to the next over HTTP; the last writes the result file. Every hop appends to the audit journal.">
+    <defs>
+      <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L7,3 z" fill="currentColor"/>
+      </marker>
+    </defs>
+    <g style="color:var(--ink-3)" fill="none" stroke="currentColor" stroke-width="1.4">
+      <!-- client -> gateway -->
+      <line x1="86" y1="60" x2="150" y2="60" marker-end="url(#ar)"/>
+      <!-- gateway -> first service -->
+      <line x1="228" y1="78" x2="228" y2="128" marker-end="url(#ar)"/>
+      <!-- service chain -->
+      <line x1="316" y1="152" x2="368" y2="152" marker-end="url(#ar)"/>
+      <line x1="464" y1="152" x2="516" y2="152" marker-end="url(#ar)"/>
+      <line x1="612" y1="152" x2="664" y2="152" marker-end="url(#ar)"/>
+      <line x1="760" y1="152" x2="812" y2="152" marker-end="url(#ar)"/>
+      <line x1="908" y1="152" x2="960" y2="152" marker-end="url(#ar)"/>
+      <!-- journal -->
+      <line x1="228" y1="176" x2="228" y2="242" marker-end="url(#ar)" stroke-dasharray="4 3"/>
+      <line x1="376" y1="176" x2="376" y2="242" marker-end="url(#ar)" stroke-dasharray="4 3"/>
+      <line x1="524" y1="176" x2="524" y2="242" marker-end="url(#ar)" stroke-dasharray="4 3"/>
+      <line x1="672" y1="176" x2="672" y2="242" marker-end="url(#ar)" stroke-dasharray="4 3"/>
+      <line x1="820" y1="176" x2="820" y2="242" marker-end="url(#ar)" stroke-dasharray="4 3"/>
+      <line x1="990" y1="176" x2="990" y2="242" marker-end="url(#ar)" stroke-dasharray="4 3"/>
+    </g>
+
+    <!-- client + gateway -->
+    <g>
+      <rect x="8" y="40" width="78" height="40" rx="7" fill="var(--panel-2)" stroke="var(--line)"/>
+      <text class="lbl" x="47" y="64" text-anchor="middle">client</text>
+
+      <rect x="150" y="40" width="156" height="38" rx="7" fill="var(--accent-soft)" stroke="var(--accent)"/>
+      <text class="ttl" x="228" y="64" text-anchor="middle">REST gateway</text>
+    </g>
+
+    <!-- services -->
+    <g>
+      <rect x="160" y="128" width="156" height="48" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+      <text class="lbl" x="238" y="148" text-anchor="middle">transaction_validator</text>
+      <text class="lbl-s" x="238" y="164" text-anchor="middle">fields · ISO 4217 · Decimal</text>
+
+      <rect x="368" y="128" width="96" height="48" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+      <text class="lbl" x="416" y="148" text-anchor="middle">fraud</text>
+      <text class="lbl-s" x="416" y="164" text-anchor="middle">7 rules → 0-100</text>
+
+      <rect x="516" y="128" width="96" height="48" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+      <text class="lbl" x="564" y="148" text-anchor="middle">compliance</text>
+      <text class="lbl-s" x="564" y="164" text-anchor="middle">sanctions · CTR</text>
+
+      <rect x="664" y="128" width="96" height="48" rx="7" fill="var(--accent-soft)" stroke="var(--accent)"/>
+      <text class="lbl" x="712" y="148" text-anchor="middle">policy</text>
+      <text class="lbl-s" x="712" y="164" text-anchor="middle">rule pack (JSON)</text>
+
+      <rect x="812" y="128" width="96" height="48" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+      <text class="lbl" x="860" y="148" text-anchor="middle">settlement</text>
+      <text class="lbl-s" x="860" y="164" text-anchor="middle">fee · net · date</text>
+
+      <rect x="960" y="128" width="112" height="48" rx="7" fill="var(--panel-2)" stroke="var(--line)"/>
+      <text class="lbl" x="1016" y="148" text-anchor="middle">results/</text>
+      <text class="lbl-s" x="1016" y="164" text-anchor="middle">one file per txn</text>
+    </g>
+
+    <!-- labels on the wire -->
+    <text class="lbl-s" x="342" y="146" text-anchor="middle">POST</text>
+    <text class="lbl-s" x="490" y="146" text-anchor="middle">POST</text>
+    <text class="lbl-s" x="638" y="146" text-anchor="middle">POST</text>
+    <text class="lbl-s" x="786" y="146" text-anchor="middle">POST</text>
+    <text class="lbl-s" x="934" y="146" text-anchor="middle">write</text>
+
+    <!-- journal -->
+    <g>
+      <rect x="160" y="242" width="912" height="46" rx="7" fill="var(--panel-2)" stroke="var(--line)" stroke-dasharray="4 3"/>
+      <text class="ttl" x="616" y="262" text-anchor="middle">shared/audit/audit-log.jsonl — append-only journal, one line per hop</text>
+      <text class="lbl-s" x="616" y="278" text-anchor="middle">ISO 8601 timestamp · agent · transaction id · outcome · request id — accounts masked ****NNNN</text>
+    </g>
+    <text class="lbl-s" x="8" y="266">files, under the hood</text>
+  </svg>
+  </div>
+
+  <div class="grid g3" style="margin-top:8px">
+    <div class="card"><h4>Choreography, not orchestration</h4><p>Each service calls its own successor. Nobody conducts. The chain is synchronous, so the verdict unwinds back to the caller in one request.</p></div>
+    <div class="card"><h4>Idempotent hops</h4><p>Each service caches by <code>message_id</code>. A retried hop returns the first answer instead of processing twice or writing a second result.</p></div>
+    <div class="card"><h4>Two transports, one truth</h4><p><code>inprocess</code> for batch and tests, <code>rest</code> for the mesh. A test asserts they never disagree on a verdict.</p></div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="demo">
+  <div class="eyebrow">Live demo</div>
+  <h2>Run it from this page</h2>
+
+  <div class="banner" id="conn-banner">
+    <div>
+      <p id="conn-text">Checking whether an API is reachable…</p>
+    </div>
+  </div>
+
+  <div class="conn">
+    <input class="port" id="api-base" spellcheck="false" aria-label="API base URL">
+    <button class="act" id="btn-connect">Connect</button>
+    <span class="pill neutral" id="conn-pill">unknown</span>
+    <span class="muted" id="conn-detail"></span>
+  </div>
+
+  <h3>Scenarios</h3>
+  <div class="controls">
+    <button class="act primary" data-scenario="settled">Settled · 1 500 USD</button>
+    <button class="act" data-scenario="held">Held · 75 000 USD</button>
+    <button class="act" data-scenario="rejected">Rejected · currency XYZ</button>
+    <button class="act" data-scenario="schema">400 · schema violation</button>
+    <button class="act" data-scenario="structuring-default">9 999.99 · default pack</button>
+    <button class="act" data-scenario="structuring-strict">9 999.99 · <strong>strict</strong> pack</button>
+  </div>
+  <div class="controls">
+    <button class="act" id="btn-sample">Run the whole sample (8)</button>
+    <button class="act" id="btn-refresh">Refresh results</button>
+    <button class="act" id="btn-reset">Clear the view</button>
+  </div>
+
+  <h3>The chain, hop by hop</h3>
+  <div class="flow" id="flow"></div>
+  <div class="verdict" id="verdict"><span class="muted">Pick a scenario above.</span></div>
+  <p class="muted" style="margin-top:10px">
+    The hop order and every status come from the response the API actually returned
+    (<code>trace</code> in the body). Only the pacing between hops is presentational.
+  </p>
+
+  <div class="grid g2" style="margin-top:22px">
+    <div>
+      <h3>HTTP exchanges</h3>
+      <div class="logwrap">
+        <div class="hd"><span>method</span><span>path</span><span>status</span><span>ms</span></div>
+        <div class="log" id="log"><div class="empty">Nothing sent yet.</div></div>
+      </div>
+    </div>
+    <div>
+      <h3>Results in the journal</h3>
+      <div class="logwrap">
+        <div class="hd" style="grid-template-columns:none"><span id="results-hd">no results yet</span></div>
+        <div class="log" id="results" style="max-height:260px"><div class="empty">Run something.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="rules">
+  <div class="eyebrow">The new agent</div>
+  <h2>Policy is data, not code</h2>
+  <p>
+    The sixth agent owns no policy of its own. It loads a <strong>rule pack</strong> from JSON and applies it.
+    Conditions are structured data — <code>all</code> / <code>any</code> / <code>not</code> and a
+    <code>{fact, op, value}</code> leaf — evaluated by an explicit operator table. There is no
+    <code>eval</code>, no <code>exec</code>, and no importing a module named in a config file.
+  </p>
+
+  <div class="grid g2">
+    <div>
+      <h3>A rule</h3>
+<pre>{
+  "id": "strict_high_value_surcharge",
+  "order": 30,
+  "when": { "fact": "usd_amount",
+            "op": "&gt;=", "value": "20000" },
+  "then": { "set": { "fee_rate": "0.0035",
+                     "fee_cap":  "100.00",
+                     "dual_approval_required": true },
+            "tags": ["surcharge"] }
+}</pre>
+      <p class="muted">Numbers are strings so they become exact <code>Decimal</code>s. A float operand is
+      refused outright — <code>9.0 &gt; "10"</code> is false numerically but true lexicographically, and
+      guessing would silently invert a policy.</p>
+    </div>
+    <div>
+      <h3>Same input, same code, different pack</h3>
+      <div class="scroll">
+      <table>
+        <thead><tr><th>Transaction</th><th>default</th><th>strict</th></tr></thead>
+        <tbody>
+          <tr><td><code>TXN001</code> 1 500.00</td><td><span class="pill ok">settled</span></td><td><span class="pill ok">settled</span></td></tr>
+          <tr><td><code>TXN002</code> 25 000.00</td><td><span class="pill ok">settled</span> fee 25.00</td><td><span class="pill ok">settled</span> fee <strong>87.50</strong></td></tr>
+          <tr><td><code>TXN003</code> 9 999.99</td><td><span class="pill ok">settled</span></td><td><span class="pill warn">held</span> structuring</td></tr>
+          <tr><td><code>TXN004</code> 500.00 EUR</td><td><span class="pill ok">settled</span></td><td><span class="pill warn">held</span> off-hours</td></tr>
+          <tr><td><code>TXN005</code> 75 000.00</td><td><span class="pill warn">held</span></td><td><span class="pill warn">held</span></td></tr>
+          <tr><td><code>TXN006</code> XYZ</td><td><span class="pill bad">rejected</span></td><td><span class="pill bad">rejected</span></td></tr>
+          <tr><td><code>TXN007</code> −100.00</td><td><span class="pill bad">rejected</span></td><td><span class="pill bad">rejected</span></td></tr>
+          <tr><td><code>TXN008</code> 3 200.00</td><td><span class="pill ok">settled</span></td><td><span class="pill ok">settled</span></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="muted">5 settled / 1 held → 3 settled / 3 held, plus one changed fee. Nothing but JSON was edited.
+      Both tables are asserted per transaction in the suite.</p>
+    </div>
+  </div>
+
+  <h3>Refuses to guess</h3>
+  <ul class="tight">
+    <li>An unknown operator, an unknown action key, a duplicate id or a malformed leaf is a <strong>load-time</strong> error naming the pack, the rule and the field — never a silent skip at decision time.</li>
+    <li>A disabled rule is still validated, so a typo cannot hide behind <code>"enabled": false</code>.</li>
+    <li><code>all</code> of nothing is true; <code>any</code> of nothing is false. Both are asserted, because guessing there inverts a policy.</li>
+    <li>An unreadable pack is a <strong>hold</strong> with reason <code>policy_pack_unavailable</code>.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="api">
+  <div class="eyebrow">The API</div>
+  <h2>Sixteen routes, one error contract</h2>
+  <div class="grid g2">
+    <div>
+      <h3>Surface</h3>
+      <div class="scroll">
+      <table>
+        <tbody>
+          <tr><td><code>POST /transactions</code></td><td>submit one, get the verdict</td></tr>
+          <tr><td><code>POST /transactions/batch</code></td><td>an array; <code>207</code> when mixed</td></tr>
+          <tr><td><code>GET /transactions</code></td><td>everything processed</td></tr>
+          <tr><td><code>GET /transactions/{id}</code></td><td>one outcome</td></tr>
+          <tr><td><code>GET /agents</code></td><td>the agent catalog</td></tr>
+          <tr><td><code>POST /agents/{name}/process</code></td><td>one agent, stateless</td></tr>
+          <tr><td><code>POST /pipeline/chain</code></td><td>every agent, writing nothing</td></tr>
+          <tr><td><code>POST /pipeline/run</code></td><td>the bundled sample</td></tr>
+          <tr><td><code>GET /rules</code> · <code>GET /errors</code></td><td>active pack · error catalog</td></tr>
+          <tr><td><code>GET /summary[.md]</code> · <code>GET /audit</code></td><td>report · journal tail</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <div>
+      <h3>Errors are RFC 9457 problem+json</h3>
+<pre>HTTP/1.1 422 Unprocessable Entity
+Content-Type: application/problem+json
+Location: /transactions/BAD1
+
+{
+  "type":    "urn:hw6:error:transaction-rejected",
+  "title":   "Transaction rejected by the pipeline",
+  "status":  422,
+  "detail":  "transaction BAD1 was rejected: unknown_currency:XYZ",
+  "instance":"/transactions",
+  "code":    "transaction_rejected",
+  "request_id": "9f21c0b4e77a",
+  "reasons": ["unknown_currency:XYZ"],
+  "outcome": { … }
+}</pre>
+      <ul class="tight">
+        <li><strong>422</strong> rejected · <strong>409</strong> held — a business verdict, and the result is still stored and retrievable, so <code>Location</code> is real.</li>
+        <li><strong>400</strong> is reserved for a malformed <em>request</em>: bad JSON, bad query, or a schema violation reported field by field.</li>
+        <li><strong>503</strong> when a downstream service is unreachable — flagged <code>retryable</code>, safe because hops are idempotent.</li>
+        <li><code>request_id</code> appears in the response header, the problem body <em>and</em> the audit journal.</li>
+        <li>A 5xx never carries an upstream exception string. The catalog's generic detail goes out; the real cause goes to the log.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="workflow">
+  <div class="eyebrow">How it was built</div>
+  <h2>Requirements first, then code — as artefacts, not conversation</h2>
+  <p>
+    Every requirement exists as a written document <em>before</em> the code it describes, and the
+    specification carries a traceability table from requirement → objective → task → the test that proves it.
+  </p>
+  <div class="grid g3">
+    <div class="card"><h4>CR-01</h4><p>Interaction interfaces and the configurable rule engine. Scoped as "base implementation unchanged".</p></div>
+    <div class="card"><h4>CR-02</h4><p>Agents become microservices talking REST; files demoted to journal. <strong>Withdrew</strong> CR-01's freeze guardrail, explicitly.</p></div>
+    <div class="card"><h4>specification.md v2.0</h4><p>MO-1…MO-10 objectives, T-0…T-19 tasks, IN-* guardrails, EC-01…EC-32 edge cases.</p></div>
+  </div>
+  <h3>What the AI tooling actually contributed</h3>
+  <ul class="tight">
+    <li><strong>context7 (MCP)</strong> — three documented lookups. FastMCP's in-memory client turned six MCP tests from subprocess spawns into ~0.2 s; CPython's <code>decimal</code> docs are why rounding is explicit <code>ROUND_HALF_UP</code> and why floats are refused.</li>
+    <li><strong>Skills</strong> — <code>/write-spec</code>, <code>/run-pipeline</code>, <code>/validate-transactions</code> as first-class slash commands.</li>
+    <li><strong>Hooks</strong> — a <code>PreToolUse</code> gate that blocks <code>git push</code> below 80 % coverage; the same gate is a git <code>pre-push</code> hook and a CLI.</li>
+    <li><strong>Custom MCP server</strong> — two tools and a <code>pipeline://summary</code> resource, so a model can query a finished run.</li>
+    <li><strong>Self-correction is on the record</strong> — the demo script itself found three real bugs: subprocess services computing the wrong topology, a here-doc stealing stdin from a formatter, and a rule-pack override that never reached the mesh.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="numbers">
+  <div class="eyebrow">Verification</div>
+  <h2>Numbers, and how to reproduce them</h2>
+  <div class="grid g3">
+    <div class="card"><div class="stat">442</div><div class="muted">tests passing</div></div>
+    <div class="card"><div class="stat">92.9%</div><div class="muted">coverage · gate at 80 %</div></div>
+    <div class="card"><div class="stat">16</div><div class="muted">API routes, every error path tested</div></div>
+    <div class="card"><div class="stat small">8 / 8</div><div class="muted">sample transactions reconciled, both transports</div></div>
+    <div class="card"><div class="stat small">0</div><div class="muted"><code>ACC-</code> occurrences in any response, report or journal</div></div>
+    <div class="card"><div class="stat small">1 cmd</div><div class="muted"><code>./demo.sh</code> — zero manual steps</div></div>
+  </div>
+<pre>cd homework-6
+./demo.sh                                    # everything, with cleanup on failure or Ctrl-C
+.venv/bin/pytest                             # 442 passed, 92.9% coverage
+.venv/bin/python integrator.py --rules policy-strict   # the strict table
+.venv/bin/python -m services                 # the mesh: one process per agent
+.venv/bin/python -m gateway --transport rest # the API in front of it, serving this page at /</pre>
+  <footer>
+    <p><strong>Quorum</strong> · Simon Darienko · homework-6 · Claude Code (Opus 5).
+    Not in scope, deliberately: auth, TLS and rate limiting on a loopback-only demo surface; a broker;
+    a database — the file journal is the storage model.</p>
+  </footer>
+</section>
+
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const AGENTS = [
+    { name: "transaction_validator", short: "validator" },
+    { name: "fraud_detector",        short: "fraud" },
+    { name: "compliance_checker",    short: "compliance" },
+    { name: "policy_engine",         short: "policy" },
+    { name: "settlement_processor",  short: "settlement" },
+  ];
+
+  // Canned traces, used only when no API is reachable. They are copies of real responses.
+  const OFFLINE = {
+    settled:  { status: 201, verdict: "settled",  hops: 5, detail: "net 1496.25 USD · express" },
+    held:     { status: 409, verdict: "held",     hops: 3, detail: "fraud_review_required" },
+    rejected: { status: 422, verdict: "rejected", hops: 1, detail: "unknown_currency:XYZ" },
+    schema:   { status: 400, verdict: "validation_failed", hops: 0, detail: "5 missing fields, amount:wrong_type" },
+    "structuring-default": { status: 201, verdict: "settled", hops: 5, detail: "net 9974.99 USD · deferred" },
+    "structuring-strict":  { status: 409, verdict: "held",    hops: 4, detail: "structuring_manual_review" },
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const flowEl = $("flow"), verdictEl = $("verdict"), logEl = $("log");
+  const resultsEl = $("results"), resultsHd = $("results-hd");
+  const pill = $("conn-pill"), connDetail = $("conn-detail");
+  const banner = $("conn-banner"), bannerText = $("conn-text");
+  const baseInput = $("api-base");
+
+  let live = false;
+  let busy = false;
+  let counter = 0;
+
+  // ---------- flow visual ----------
+  function drawFlow() {
+    flowEl.innerHTML = AGENTS.map((a, i) => `
+      <div class="node" data-agent="${a.name}" data-state="idle">
+        <span class="hopmark">hop ${i + 1}</span>
+        <div class="idx">${i + 1}</div>
+        <div class="name">${a.name}</div>
+        <div class="state"></div>
+      </div>`).join("");
+  }
+  const nodes = () => Array.from(flowEl.querySelectorAll(".node"));
+  function resetFlow() {
+    nodes().forEach((n) => { n.dataset.state = "idle"; n.querySelector(".state").textContent = ""; });
+  }
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  async function animate(trace, verdict) {
+    resetFlow();
+    const list = nodes();
+    for (let i = 0; i < trace.length; i++) {
+      const hop = trace[i];
+      const el = flowEl.querySelector(`.node[data-agent="${hop.agent}"]`) || list[i];
+      if (!el) continue;
+      el.dataset.state = "active";
+      el.querySelector(".state").textContent = hop.status || "";
+      await sleep(230);
+      const terminal = i === trace.length - 1;
+      el.dataset.state = terminal && verdict !== "settled" ? verdict : "done";
+    }
+    // anything the chain never reached
+    const reached = new Set(trace.map((h) => h.agent));
+    list.forEach((el) => { if (!reached.has(el.dataset.agent)) el.dataset.state = "skipped"; });
+  }
+
+  function showVerdict(status, verdict, detail, extra) {
+    const tone = status < 300 ? "ok" : status < 500 ? (verdict === "held" ? "warn" : "bad") : "bad";
+    verdictEl.innerHTML = `
+      <span class="pill ${tone}">HTTP ${status}</span>
+      <span class="big">${verdict}</span>
+      <span class="muted">${detail || ""}</span>
+      ${extra ? `<span class="pill neutral">${extra}</span>` : ""}`;
+  }
+
+  // ---------- log ----------
+  function logRow(method, path, status, ms) {
+    if (logEl.querySelector(".empty")) logEl.innerHTML = "";
+    const tone = status === "—" ? "" : status < 300 ? "ok" : status < 500 ? "warn" : "bad";
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<span class="m">${method}</span><span>${path}</span>
+                     <span class="s ${tone}">${status}</span><span class="d">${ms}</span>`;
+    logEl.prepend(row);
+    while (logEl.children.length > 60) logEl.lastChild.remove();
+  }
+
+  // ---------- transport ----------
+  function base() { return baseInput.value.replace(/\/+$/, ""); }
+
+  async function api(path, { method = "GET", body = null, headers = {} } = {}) {
+    const started = performance.now();
+    const options = { method, headers: { ...headers } };
+    if (body !== null) {
+      options.headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify(body);
+    }
+    const response = await fetch(base() + path, options);
+    const ms = Math.round(performance.now() - started);
+    let payload = null;
+    try { payload = await response.json(); } catch { payload = null; }
+    logRow(method, path, response.status, ms);
+    return { status: response.status, payload, requestId: response.headers.get("X-Request-Id") };
+  }
+
+  async function connect() {
+    pill.className = "pill info"; pill.textContent = "connecting";
+    connDetail.textContent = "";
+    try {
+      const health = await api("/health");
+      if (health.status !== 200) throw new Error("unhealthy");
+      live = true;
+      const h = health.payload || {};
+      pill.className = "pill ok"; pill.textContent = "live";
+      connDetail.textContent = `${h.service} ${h.api_version} · pack ${h.rule_pack} · ${h.results} result(s) in the journal`;
+      banner.classList.add("live");
+      bannerText.innerHTML = "<strong>Live.</strong> Every button below sends a real HTTP request to the running pipeline; the hops you see come from the response.";
+      await refreshResults();
+    } catch {
+      live = false;
+      pill.className = "pill warn"; pill.textContent = "offline";
+      connDetail.textContent = "no API on that address";
+      banner.classList.remove("live");
+      bannerText.innerHTML = "<strong>Offline mode.</strong> The buttons replay recorded responses. " +
+        "For the real thing run <code>./demo.sh --keep-running</code>, then open the printed gateway URL — " +
+        "this page is served by the API itself at <code>/</code>.";
+    }
+  }
+
+  // ---------- scenarios ----------
+  const txn = (id, over = {}) => Object.assign({
+    transaction_id: id,
+    timestamp: "2026-03-16T09:00:00Z",
+    source_account: "ACC-1001",
+    destination_account: "ACC-2001",
+    amount: "1500.00",
+    currency: "USD",
+    transaction_type: "transfer",
+    description: "submitted from the presentation",
+    metadata: { channel: "api", country: "US" },
+  }, over);
+
+  function scenarioBody(kind) {
+    const id = kind.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10) + (++counter);
+    switch (kind) {
+      case "settled":  return { body: txn(id), query: "" };
+      case "held":     return { body: txn(id, { amount: "75000.00", transaction_type: "wire_transfer", metadata: { channel: "branch", country: "US" } }), query: "" };
+      case "rejected": return { body: txn(id, { currency: "XYZ", amount: "200.00" }), query: "" };
+      case "schema":   return { body: { transaction_id: id, amount: 1500.0, nope: true }, query: "" };
+      case "structuring-default": return { body: txn(id, { amount: "9999.99", metadata: { channel: "online", country: "US" } }), query: "" };
+      case "structuring-strict":  return { body: txn(id, { amount: "9999.99", metadata: { channel: "online", country: "US" } }), query: "?rules=policy-strict" };
+      default: return { body: txn(id), query: "" };
+    }
+  }
+
+  async function runScenario(kind) {
+    if (busy) return;
+    busy = true;
+    setButtons(false);
+    try {
+      if (!live) {
+        const canned = OFFLINE[kind];
+        const trace = AGENTS.slice(0, canned.hops).map((a, i) => ({
+          agent: a.name, status: i === canned.hops - 1 ? canned.verdict : "…",
+        }));
+        logRow("POST", "/transactions (replay)", canned.status, "—");
+        await animate(trace, canned.verdict);
+        showVerdict(canned.status, canned.verdict, canned.detail, "recorded");
+        return;
+      }
+
+      const { body, query } = scenarioBody(kind);
+      const reply = await api("/transactions" + query, { method: "POST", body });
+      const p = reply.payload || {};
+      const outcome = p.outcome && typeof p.outcome === "object" ? p.outcome : p;
+      const trace = p.trace || outcome.trace || [];
+      const verdict = outcome.status || p.code || "?";
+
+      let detail = "";
+      if (outcome.net_amount) detail = `net ${outcome.net_amount} ${outcome.currency || ""} · ${outcome.priority || ""}`;
+      else if (Array.isArray(p.reasons) && p.reasons.length) detail = p.reasons.join(", ");
+      else if (Array.isArray(p.errors)) detail = p.errors.map((e) => `${e.field}:${e.code}`).join(", ");
+      else detail = p.detail || "";
+
+      if (trace.length) await animate(trace, verdict);
+      else resetFlow();
+      showVerdict(reply.status, verdict, detail, p.transport || outcome.transport || (reply.requestId ? "req " + reply.requestId : ""));
+      await refreshResults();
+    } catch (error) {
+      showVerdict(0, "request failed", String(error));
+    } finally {
+      busy = false; setButtons(true);
+    }
+  }
+
+  async function runSample() {
+    if (busy || !live) { if (!live) showVerdict(0, "offline", "connect to an API first"); return; }
+    busy = true; setButtons(false);
+    try {
+      const reply = await api("/pipeline/run", { method: "POST", body: {} });
+      const summary = reply.payload || {};
+      resetFlow();
+      nodes().forEach((n) => { n.dataset.state = "done"; n.querySelector(".state").textContent = "batch"; });
+      showVerdict(reply.status, "sample run", JSON.stringify(summary.by_status || {}), `${summary.total_transactions || 0} transactions`);
+      await refreshResults();
+    } finally { busy = false; setButtons(true); }
+  }
+
+  async function refreshResults() {
+    if (!live) return;
+    try {
+      const reply = await api("/transactions");
+      const data = reply.payload || {};
+      const rows = (data.transactions || []).slice(-40).reverse();
+      resultsHd.textContent = `${data.total || 0} in the journal · ${JSON.stringify(data.by_status || {})}`;
+      if (!rows.length) { resultsEl.innerHTML = '<div class="empty">Nothing yet.</div>'; return; }
+      resultsEl.innerHTML = rows.map((r) => {
+        const tone = r.status === "settled" ? "ok" : r.status === "held" ? "warn" : "bad";
+        const extra = r.net_amount ? `net ${r.net_amount}` : (r.hold_reasons?.[0] || r.rejection_reasons?.[0] || "");
+        return `<div class="row" style="grid-template-columns:96px 82px 1fr">
+                  <span>${r.transaction_id}</span>
+                  <span class="s ${tone}">${r.status}</span>
+                  <span class="m">${extra}</span>
+                </div>`;
+      }).join("");
+    } catch { /* the log already shows the failure */ }
+  }
+
+  function setButtons(enabled) {
+    document.querySelectorAll("button.act").forEach((b) => { b.disabled = !enabled; });
+  }
+
+  // ---------- nav ----------
+  const sections = Array.from(document.querySelectorAll("main > section"));
+  const labels = { title: "Intro", problem: "Problem", architecture: "Architecture", demo: "Live demo", rules: "Rule engine", api: "API", workflow: "Workflow", numbers: "Numbers" };
+  $("nav").innerHTML = sections.map((s) => `<button data-goto="${s.id}">${labels[s.id] || s.id}</button>`).join("");
+  $("nav").addEventListener("click", (event) => {
+    const id = event.target.dataset?.goto;
+    if (id) document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      document.querySelectorAll("nav.dots button").forEach((b) =>
+        b.setAttribute("aria-current", String(b.dataset.goto === entry.target.id)));
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  sections.forEach((s) => observer.observe(s));
+
+  document.addEventListener("keydown", (event) => {
+    if (event.target.tagName === "INPUT") return;
+    const index = sections.findIndex((s) => s.getBoundingClientRect().top > -80);
+    if (event.key === "ArrowRight" || event.key === "PageDown") {
+      sections[Math.min(sections.length - 1, Math.max(0, index))]?.scrollIntoView({ behavior: "smooth" });
+    } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+      sections[Math.max(0, index - 2)]?.scrollIntoView({ behavior: "smooth" });
+    }
+  });
+
+  // ---------- wire up ----------
+  drawFlow();
+  baseInput.value = location.protocol.startsWith("http") ? location.origin : "http://127.0.0.1:8080";
+  $("btn-connect").addEventListener("click", connect);
+  $("btn-sample").addEventListener("click", runSample);
+  $("btn-refresh").addEventListener("click", refreshResults);
+  $("btn-reset").addEventListener("click", () => {
+    resetFlow();
+    verdictEl.innerHTML = '<span class="muted">Pick a scenario above.</span>';
+    logEl.innerHTML = '<div class="empty">Nothing sent yet.</div>';
+  });
+  document.querySelectorAll("button[data-scenario]").forEach((b) =>
+    b.addEventListener("click", () => runScenario(b.dataset.scenario)));
+
+  connect();
+})();
+</script>
+</body>
+</html>

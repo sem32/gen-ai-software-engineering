@@ -1,0 +1,25 @@
+The sixth agent applies a rule pack loaded from JSON. Swapping the pack is configuration.
+
+$ .venv/bin/python integrator.py --shared /tmp/hw6-ev-default --quiet
+[exit code: 0]
+
+$ .venv/bin/python integrator.py --shared /tmp/hw6-ev-strict --rules policy-strict --quiet
+[exit code: 0]
+
+$ .venv/bin/python -c "<python snippet>"
+  TXN      policy-default            policy-strict             change
+  ------------------------------------------------------------------------------
+  TXN001   settled (1496.25)         settled (1496.25)         
+  TXN002   settled (24975.00)        settled (24912.50)        <-- changed
+  TXN003   settled                   held                      <-- changed
+  TXN004   settled                   held                      <-- changed
+  TXN005   held                      held                      
+  TXN006   rejected                  rejected                  
+  TXN007   rejected                  rejected                  
+  TXN008   settled (3192.00)         settled (3192.00)         
+
+  default : {'held': 1, 'rejected': 2, 'settled': 5}
+  strict  : {'held': 3, 'rejected': 2, 'settled': 3}
+  only rules/policy-strict.json differs — no code was touched
+[exit code: 0]
+

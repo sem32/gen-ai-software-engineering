@@ -1,0 +1,77 @@
+--- context7 MCP (used by Agent 2 during code generation) ---------------
+mcp__context7__resolve-library-id(libraryName='FastMCP',
+        query='define tools and resources on a FastMCP server in Python')
+  -> /prefecthq/fastmcp        benchmark 82.71   4041 snippets   reputation High
+     /llmstxt/gofastmcp_llms_txt  84.40 · /websites/gofastmcp  61.73
+
+mcp__context7__query-docs(libraryId='/prefecthq/fastmcp',
+        query='define @mcp.tool and @mcp.resource with a custom URI, and
+               test the server in-memory with Client')
+  -> @mcp.resource("data://config")  — URI is the decorator argument
+  -> Client(server) runs the real MCP protocol in-process, no network
+
+mcp__context7__resolve-library-id(libraryName='Python',
+        query='decimal module quantize ROUND_HALF_UP for monetary arithmetic')
+  -> /python/cpython           benchmark 77.12   36843 snippets
+mcp__context7__query-docs(libraryId='/python/cpython', query='decimal: quantize
+        with ROUND_HALF_UP ... why float must not be used for money')
+  -> Decimal(1.1) is Decimal('1.1000000000000000888...265625') — so build from str;
+     quantize(exp, rounding=ROUND_HALF_UP), because the context default is HALF_EVEN
+  (full write-up: research-notes.md)
+
+--- custom MCP server: pipeline-status ---------------------------------
+$ .venv/bin/python scripts/verify_mcp_server.py
+$ /Users/sem/git/education/gen-ai-software-engineering/homework-6/.venv/bin/python /Users/sem/git/education/gen-ai-software-engineering/homework-6/mcp/server.py
+connecting over stdio (MCP JSON-RPC)...
+
+=== initialize / capabilities ===================================
+  tool     : get_transaction_status(transaction_id)
+  tool     : list_pipeline_results()
+  resource : pipeline://summary
+
+=== tools/call get_transaction_status TXN001 ====================
+{
+  "found": true,
+  "transaction_id": "TXN001",
+  "status": "settled",
+  "amount": "1500.00",
+  "currency": "USD",
+  "transaction_type": "transfer",
+  "risk_score": 0,
+  "risk_level": "low",
+  "review_required": false,
+  "ctr_required": false,
+  "hold_reasons": [],
+  "rejection_reasons": [],
+  "rule_pack": "policy-default",
+  "priority": "express",
+  "sla_hours": 4,
+  "policy_tags": [
+    "fast-lane"
+  ],
+  "dual_approval_required": false,
+  "matched_policy_rules": [
+    "express_small_low_risk"
+  ],
+  "settlement_id": "STL-TXN001",
+  "fee": "3.75",
+  "net_amount": "1496.25",
+  "value_date": "2026-03-17",
+  "finalised_by": "settlement_processor",
+  "finalised_at": "2026-08-12T17:05:07Z"
+}
+
+=== tools/call get_transaction_status TXN005 (held) =============
+{
+  "found": true,
+  "transaction_id": "TXN005",
+  "status": "held",
+  "amount": "75000.00",
+  "currency": "USD",
+  "transaction_type": "wire_transfer",
+  "risk_score": 60,
+  "risk_level": "high",
+  "review_required": true,
+  "ctr_required": true,
+
+... (93 more lines — full transcript in docs/sample-run/mcp-interaction.txt)

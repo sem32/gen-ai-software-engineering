@@ -1,0 +1,7 @@
+# The pipeline itself needs nothing beyond the standard library.
+# These are required only for the test suite, the coverage gate and the custom MCP server.
+
+fastmcp>=3.0        # custom MCP server (mcp/server.py) and its in-memory test client
+pytest>=8.0         # test runner
+pytest-cov>=5.0     # coverage measurement feeding the 80% push gate
+Pillow>=10.0        # renders the terminal transcripts in docs/screenshots/ to PNG
