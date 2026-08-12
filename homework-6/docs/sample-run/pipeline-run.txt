@@ -1,10 +1,12 @@
 $ .venv/bin/python integrator.py
 [integrator] workspace  : /Users/sem/git/education/gen-ai-software-engineering/homework-6/shared
 [integrator] input file  : /Users/sem/git/education/gen-ai-software-engineering/homework-6/sample-transactions.json
+[integrator] rule pack   : policy-default
 [integrator] ingested    : 8 transaction(s) -> shared/input
 [transaction_validator] processed 8 message(s), 2 terminal, 6 forwarded
 [fraud_detector] processed 6 message(s), 0 terminal, 6 forwarded
 [compliance_checker] processed 6 message(s), 1 terminal, 5 forwarded
+[policy_engine] processed 5 message(s), 0 terminal, 5 forwarded
 [settlement_processor] processed 5 message(s), 5 terminal, 0 forwarded
 
 PIPELINE RESULTS

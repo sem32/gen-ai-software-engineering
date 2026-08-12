@@ -57,8 +57,9 @@ def test_intermediate_directories_are_empty_after_the_run(completed_run):
 
 
 def test_every_message_passed_through_processing(completed_run):
-    # 8 validated + 6 scored + 6 screened + 5 settled = 25 claims
-    assert len(list(completed_run.workspace.processing_dir.glob("*.json"))) == 25
+    # 8 validated + 6 scored + 6 screened + 5 policy-checked + 5 settled = 30 claims.
+    # CR-01 inserted policy_engine, so this shape assertion moved from 25 to 30 — see CR-01 §2.
+    assert len(list(completed_run.workspace.processing_dir.glob("*.json"))) == 30
 
 
 def test_audit_trail_covers_every_agent(completed_run):
@@ -69,6 +70,7 @@ def test_audit_trail_covers_every_agent(completed_run):
         "transaction_validator",
         "fraud_detector",
         "compliance_checker",
+        "policy_engine",
         "settlement_processor",
         "reporting_agent",
     }

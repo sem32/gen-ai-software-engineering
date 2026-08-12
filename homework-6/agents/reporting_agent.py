@@ -51,6 +51,8 @@ class ReportingAgent:
         results = self.workspace.results()
         by_status: Counter[str] = Counter()
         by_risk_level: Counter[str] = Counter()
+        by_priority: Counter[str] = Counter()
+        packs: Counter[str] = Counter()
         volume: dict[str, dict[str, Decimal]] = {}
         rejected: list[dict[str, Any]] = []
         held: list[dict[str, Any]] = []
@@ -62,9 +64,14 @@ class ReportingAgent:
             status = str(data.get("status", "unknown"))
             currency = str(data.get("currency", "---"))
             fraud = data.get("fraud") or {}
+            policy = data.get("policy") or {}
             by_status[status] += 1
             if fraud.get("risk_level"):
                 by_risk_level[str(fraud["risk_level"])] += 1
+            if policy.get("priority"):
+                by_priority[str(policy["priority"])] += 1
+            if policy.get("pack", {}).get("name"):
+                packs[str(policy["pack"]["name"])] += 1
 
             row = {
                 "transaction_id": str(data.get("transaction_id", "UNKNOWN")),
@@ -73,6 +80,9 @@ class ReportingAgent:
                 "amount": str(data.get("amount", "-")),
                 "risk_score": fraud.get("risk_score"),
                 "risk_level": fraud.get("risk_level"),
+                "priority": policy.get("priority"),
+                "policy_tags": list(policy.get("tags") or []),
+                "dual_approval_required": policy.get("dual_approval_required"),
                 "detail": _detail_for(data, status),
             }
             rows.append(row)
@@ -115,6 +125,8 @@ class ReportingAgent:
             "total_transactions": len(results),
             "by_status": dict(sorted(by_status.items())),
             "by_risk_level": dict(sorted(by_risk_level.items())),
+            "by_priority": dict(sorted(by_priority.items())),
+            "rule_packs": dict(sorted(packs.items())),
             "volume_by_currency": {
                 currency: {key: format_money(value, currency) for key, value in sorted(buckets.items())}
                 for currency, buckets in sorted(volume.items())
@@ -183,6 +195,13 @@ def render_markdown(summary: dict[str, Any]) -> str:
     lines += ["", "## Risk levels", "", "| Level | Count |", "|---|---|"]
     for level, count in summary["by_risk_level"].items():
         lines.append(f"| {level} | {count} |")
+
+    if summary.get("by_priority"):
+        lines += ["", "## Policy routing", "", "| Priority | Count |", "|---|---|"]
+        for priority, count in summary["by_priority"].items():
+            lines.append(f"| {priority} | {count} |")
+        packs = ", ".join(f"{name} ({count})" for name, count in summary["rule_packs"].items())
+        lines += ["", f"Rule pack(s) applied: {packs}."]
 
     lines += ["", "## Volume by currency", "", "| Currency | Bucket | Amount |", "|---|---|---|"]
     for currency, buckets in summary["volume_by_currency"].items():

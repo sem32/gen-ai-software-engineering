@@ -43,12 +43,22 @@ connecting over stdio (MCP JSON-RPC)...
   "ctr_required": false,
   "hold_reasons": [],
   "rejection_reasons": [],
+  "rule_pack": "policy-default",
+  "priority": "express",
+  "sla_hours": 4,
+  "policy_tags": [
+    "fast-lane"
+  ],
+  "dual_approval_required": false,
+  "matched_policy_rules": [
+    "express_small_low_risk"
+  ],
   "settlement_id": "STL-TXN001",
   "fee": "3.75",
   "net_amount": "1496.25",
   "value_date": "2026-03-17",
   "finalised_by": "settlement_processor",
-  "finalised_at": "2026-08-09T22:53:56Z"
+  "finalised_at": "2026-08-12T17:05:07Z"
 }
 
 === tools/call get_transaction_status TXN005 (held) =============
@@ -63,15 +73,5 @@ connecting over stdio (MCP JSON-RPC)...
   "risk_level": "high",
   "review_required": true,
   "ctr_required": true,
-  "hold_reasons": [
-    "fraud_review_required"
-  ],
-  "rejection_reasons": [],
-  "settlement_id": null,
-  "fee": null,
-  "net_amount": null,
-  "value_date": null,
-  "finalised_by": "compliance_checker",
-  "finalised_at": "2026-08-09T22:53:56Z"
 
-... (73 more lines — full transcript in docs/sample-run/mcp-interaction.txt)
+... (93 more lines — full transcript in docs/sample-run/mcp-interaction.txt)

@@ -15,10 +15,12 @@ sample-transactions.json found: 8 records
 $ .venv/bin/python integrator.py
 [integrator] workspace  : /Users/sem/git/education/gen-ai-software-engineering/homework-6/shared
 [integrator] input file  : /Users/sem/git/education/gen-ai-software-engineering/homework-6/sample-transactions.json
+[integrator] rule pack   : policy-default
 [integrator] ingested    : 8 transaction(s) -> shared/input
 [transaction_validator] processed 8 message(s), 2 terminal, 6 forwarded
 [fraud_detector] processed 6 message(s), 0 terminal, 6 forwarded
 [compliance_checker] processed 6 message(s), 1 terminal, 5 forwarded
+[policy_engine] processed 5 message(s), 0 terminal, 5 forwarded
 [settlement_processor] processed 5 message(s), 5 terminal, 0 forwarded
 
 PIPELINE RESULTS
@@ -45,7 +47,7 @@ $ .venv/bin/python -c import pathlib;print('shared/results/:', len(list(pathlib.
 shared/results/: 8 files
 # Pipeline run summary
 
-- Generated at: `2026-08-09T22:53:56Z`
+- Generated at: `2026-08-12T17:05:07Z`
 - Transactions processed: **8**
 
 ## Outcomes
@@ -53,7 +55,5 @@ shared/results/: 8 files
 | Status | Count |
 |---|---|
 | held | 1 |
-| rejected | 2 |
-| settled | 5 |
 
-... (41 more lines — full transcript in docs/sample-run/skill-run-pipeline.txt)
+... (53 more lines — full transcript in docs/sample-run/skill-run-pipeline.txt)

@@ -57,6 +57,31 @@ class Step:
     stdin_payloads: list[str | None] = field(default_factory=list)
 
 
+REST_CHAIN = (
+    "import json, pathlib, sys\n"
+    "sys.path.append('.')\n"
+    "from services.launcher import running_mesh\n"
+    "from services.client import post_json\n"
+    "from agents.protocol import build_message\n"
+    "sample = json.loads(pathlib.Path('sample-transactions.json').read_text())\n"
+    "with running_mesh('/tmp/hw6-evidence-mesh') as mesh:\n"
+    "    print('service mesh (one process per agent, REST between them):')\n"
+    "    for s in mesh.topology.services:\n"
+    "        print(f'  {s.position}. {s.name:<24} {s.base_url}  -> {s.next_name}')\n"
+    "    print()\n"
+    "    head = f\"  {'TXN':<9}{'HTTP':<6}{'VERDICT':<11}HOPS\"\n"
+    "    print(head); print('  ' + '-' * 82)\n"
+    "    for txn in sample:\n"
+    "        msg = build_message('api_client', 'transaction_validator', 'transaction', txn)\n"
+    "        r = post_json(mesh.entrypoint, msg)\n"
+    "        body = r.payload or {}\n"
+    "        outcome = body.get('outcome') or {}\n"
+    "        hops = ' -> '.join(h['agent'].split('_')[0] for h in body.get('trace', []))\n"
+    "        print(f\"  {txn['transaction_id']:<9}{r.status:<6}{outcome.get('status','?'):<11}{hops}\")\n"
+    "    print()\n"
+    "    print('  every hop is journalled to shared/audit/audit-log.jsonl; the last hop writes the result file')\n"
+)
+
 SPEC_OUTLINE = (
     "import re, pathlib\n"
     "text = pathlib.Path('specification.md').read_text().splitlines()\n"
@@ -87,6 +112,23 @@ STEPS: list[Step] = [
         max_lines=62,
     ),
     Step(
+        slug="rest-chain",
+        title="CR-02 — agents as microservices, REST between them",
+        commands=[[PYTHON, "-c", REST_CHAIN]],
+        prologue=[
+            "Each agent runs as its own HTTP service and POSTs to its successor (choreography).",
+            "The files stay as the journal: audit trail plus the terminal result.",
+            "",
+        ],
+        epilogue=[
+            "",
+            "  Same eight inputs, same verdicts as the file-based run: 5 settled (200),",
+            "  1 held (409 at compliance), 2 rejected (422 at the validator).",
+            "  A test asserts the two transports never disagree.",
+        ],
+        max_lines=44,
+    ),
+    Step(
         slug="pipeline-run",
         title="python integrator.py  —  full multi-agent pipeline run",
         commands=[[PYTHON, "integrator.py"]],
@@ -94,7 +136,7 @@ STEPS: list[Step] = [
     ),
     Step(
         slug="test-coverage",
-        title="pytest  —  232 tests, coverage gate floor is 80%",
+        title="pytest  —  442 tests, coverage gate floor is 80%",
         commands=[[PYTEST]],
         max_lines=48,
     ),
@@ -131,6 +173,37 @@ STEPS: list[Step] = [
             "    TXN007  rejected  non_positive_amount",
         ],
         max_lines=60,
+    ),
+    Step(
+        slug="rule-packs",
+        title="Behaviour is configuration — same code, two rule packs",
+        commands=[
+            [PYTHON, "integrator.py", "--shared", "/tmp/hw6-ev-default", "--quiet"],
+            [PYTHON, "integrator.py", "--shared", "/tmp/hw6-ev-strict", "--rules", "policy-strict", "--quiet"],
+            [PYTHON, "-c",
+             "import json,pathlib\n"
+             "def load(root):\n"
+             "    s=json.loads((pathlib.Path(root)/'reports'/'pipeline-summary.json').read_text())\n"
+             "    return {r['transaction_id']:r for r in s['transactions']}, s\n"
+             "d,ds=load('/tmp/hw6-ev-default'); st,ss=load('/tmp/hw6-ev-strict')\n"
+             "print(f\"  {'TXN':<9}{'policy-default':<26}{'policy-strict':<26}change\")\n"
+             "print('  '+'-'*78)\n"
+             "for k in sorted(d):\n"
+             "    a,b=d[k],st[k]\n"
+             "    la,lb=a['status'],b['status']\n"
+             "    if la=='settled' and lb=='settled':\n"
+             "        la+=f\" ({a['detail'].split()[1]})\"; lb+=f\" ({b['detail'].split()[1]})\"\n"
+             "    print(f'  {k:<9}{la:<26}{lb:<26}' + ('' if la==lb else '<-- changed'))\n"
+             "print()\n"
+             "print(f\"  default : {ds['by_status']}\")\n"
+             "print(f\"  strict  : {ss['by_status']}\")\n"
+             "print('  only rules/policy-strict.json differs — no code was touched')\n"],
+        ],
+        prologue=[
+            "The sixth agent applies a rule pack loaded from JSON. Swapping the pack is configuration.",
+            "",
+        ],
+        max_lines=34,
     ),
     Step(
         slug="hook-trigger",

@@ -23,7 +23,8 @@ if str(PROJECT_ROOT) not in sys.path:
     # append, never insert: the local `mcp/` directory must not shadow the installed `mcp` package
     sys.path.append(str(PROJECT_ROOT))
 
-from agents import PIPELINE_AGENTS, ReportingAgent  # noqa: E402
+from agents import PIPELINE_AGENTS, PolicyEngine, ReportingAgent  # noqa: E402
+from agents.policy_engine import available_packs  # noqa: E402
 from agents.protocol import Workspace, build_message  # noqa: E402
 
 DEFAULT_SAMPLE = PROJECT_ROOT / "sample-transactions.json"
@@ -31,6 +32,113 @@ DEFAULT_SHARED = PROJECT_ROOT / "shared"
 
 FIRST_AGENT = "transaction_validator"
 INTEGRATOR_NAME = "integrator"
+TERMINAL_TARGET = "pipeline_results"
+
+
+def build_agent(agent_class, workspace: Workspace, audit, rules=None):
+    """Instantiate one agent, handing the rule pack to the only agent that takes one."""
+    if agent_class is PolicyEngine:
+        return agent_class(workspace, audit, pack=rules)
+    return agent_class(workspace, audit)
+
+
+def drain_pipeline(
+    workspace: Workspace, audit=None, rules=None
+) -> list[tuple[str, list[dict[str, Any]]]]:
+    """Run every message-driven agent once, in order, and report what each emitted.
+
+    This is the single code path the CLI, the API gateway and the demo all go through — the gateway
+    must never reimplement a decision (spec T-13).
+    """
+    audit = audit if audit is not None else workspace.audit_logger()
+    stages: list[tuple[str, list[dict[str, Any]]]] = []
+    for agent_class in PIPELINE_AGENTS:
+        emitted = build_agent(agent_class, workspace, audit, rules).run()
+        stages.append((agent_class.name, emitted))
+    return stages
+
+
+def submit_transaction_traced(
+    workspace: Workspace, transaction: dict[str, Any], *, rules=None, audit=None
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Like :func:`submit_transaction`, but also returns the hops this transaction actually took.
+
+    The trace is *observed*, not reconstructed: it records which agent emitted which status while the
+    drain was happening. It gives the in-process transport the same hop-by-hop story the REST chain
+    returns, so the presentation can animate either one.
+    """
+    audit = audit if audit is not None else workspace.audit_logger()
+    seeded = seed_input(workspace, [transaction], audit=audit)
+    wanted = transaction.get("transaction_id")
+
+    def belongs(message: dict[str, Any]) -> bool:
+        if wanted is None:
+            return True
+        return str((message.get("data") or {}).get("transaction_id")) == str(wanted)
+
+    trace: list[dict[str, Any]] = []
+    terminal: list[dict[str, Any]] = []
+
+    for position, (agent_name, emitted) in enumerate(drain_pipeline(workspace, audit, rules), start=1):
+        for message in emitted:
+            if not belongs(message):
+                continue
+            is_terminal = message["target_agent"] == TERMINAL_TARGET
+            trace.append(
+                {
+                    "agent": agent_name,
+                    "position": position,
+                    "status": str((message.get("data") or {}).get("status", "unknown")),
+                    "next": message["target_agent"],
+                    "terminal": is_terminal,
+                }
+            )
+            if is_terminal:
+                terminal.append(message)
+
+    if terminal:
+        return terminal[-1], trace
+
+    raise RuntimeError(
+        f"transaction {wanted!r} produced no terminal outcome "
+        f"(seeded {len(seeded)} message(s), {len(trace)} hop(s))"
+    )
+
+
+def submit_transaction(
+    workspace: Workspace, transaction: dict[str, Any], *, rules=None, audit=None
+) -> dict[str, Any]:
+    """Push one raw transaction through the pipeline and return its terminal message.
+
+    Used by the HTTP gateway: seed one message, drain the agents, then pick the terminal message that
+    came out. Returns ``None`` only if the transaction produced no terminal outcome at all, which
+    would be a reconciliation bug rather than a business result.
+    """
+    audit = audit if audit is not None else workspace.audit_logger()
+    seeded = seed_input(workspace, [transaction], audit=audit)
+    wanted = transaction.get("transaction_id")
+
+    terminal: list[dict[str, Any]] = [
+        message
+        for _name, emitted in drain_pipeline(workspace, audit, rules)
+        for message in emitted
+        if message["target_agent"] == TERMINAL_TARGET
+    ]
+
+    if wanted is not None:
+        for message in terminal:
+            if str((message.get("data") or {}).get("transaction_id")) == str(wanted):
+                return message
+    if len(terminal) == 1:
+        # No usable id (the validator will have rejected it for that) but the drain is serialised,
+        # so a single terminal message is unambiguously this submission's outcome.
+        return terminal[0]
+
+    # Nothing terminal came back — surface it rather than pretending the call succeeded.
+    raise RuntimeError(
+        f"transaction {wanted!r} produced no terminal outcome "
+        f"(seeded {len(seeded)} message(s), {len(terminal)} terminal)"
+    )
 
 
 def load_sample(sample_path: Path | str) -> list[dict[str, Any]]:
@@ -41,9 +149,11 @@ def load_sample(sample_path: Path | str) -> list[dict[str, Any]]:
     return records
 
 
-def seed_input(workspace: Workspace, transactions: list[dict[str, Any]]) -> list[Path]:
+def seed_input(
+    workspace: Workspace, transactions: list[dict[str, Any]], audit=None
+) -> list[Path]:
     """Write one protocol message per transaction into ``shared/input``."""
-    audit = workspace.audit_logger()
+    audit = audit if audit is not None else workspace.audit_logger()
     paths: list[Path] = []
     for transaction in transactions:
         message = build_message(
@@ -68,8 +178,13 @@ def run_pipeline(
     *,
     reset: bool = True,
     verbose: bool = True,
+    rules=None,
 ) -> dict[str, Any]:
-    """Run the whole pipeline end to end and return the run summary."""
+    """Run the whole pipeline end to end and return the run summary.
+
+    ``rules`` selects the policy rule pack (a name, a path or a loaded pack). ``None`` means the
+    default pack, or whatever ``HW6_POLICY_RULES`` names.
+    """
     transactions = load_sample(sample_path)
     workspace = Workspace.create(shared_root, reset=reset)
     audit = workspace.audit_logger()
@@ -80,14 +195,14 @@ def run_pipeline(
 
     say(f"[integrator] workspace  : {workspace.root}")
     say(f"[integrator] input file  : {sample_path}")
-    seed_input(workspace, transactions)
+    say(f"[integrator] rule pack   : {PolicyEngine(workspace, audit, pack=rules).pack_name}")
+    seed_input(workspace, transactions, audit=audit)
     say(f"[integrator] ingested    : {len(transactions)} transaction(s) -> shared/input")
 
-    for agent_class in PIPELINE_AGENTS:
-        emitted = agent_class(workspace, audit).run()
-        terminal = sum(1 for message in emitted if message["target_agent"] == "pipeline_results")
+    for agent_name, emitted in drain_pipeline(workspace, audit, rules):
+        terminal = sum(1 for message in emitted if message["target_agent"] == TERMINAL_TARGET)
         say(
-            f"[{agent_class.name}] processed {len(emitted)} message(s), "
+            f"[{agent_name}] processed {len(emitted)} message(s), "
             f"{terminal} terminal, {len(emitted) - terminal} forwarded"
         )
 
@@ -146,10 +261,20 @@ def main(argv: list[str] | None = None) -> int:
         "--no-reset", action="store_true", help="do not clear shared/ before the run"
     )
     parser.add_argument("--quiet", action="store_true", help="suppress progress output")
+    parser.add_argument(
+        "--rules",
+        default=None,
+        metavar="PACK",
+        help=f"policy rule pack: a name, a file name or a path (available: {', '.join(available_packs())})",
+    )
     args = parser.parse_args(argv)
 
     summary = run_pipeline(
-        args.sample, args.shared, reset=not args.no_reset, verbose=not args.quiet
+        args.sample,
+        args.shared,
+        reset=not args.no_reset,
+        verbose=not args.quiet,
+        rules=args.rules,
     )
 
     if not summary["reconciled"]:

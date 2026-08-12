@@ -21,7 +21,9 @@ from .base import BaseAgent
 from .fraud_detector import WATCHLIST_ACCOUNTS
 from .protocol import MoneyError, mask_account, parse_amount, usd_equivalent
 
-NEXT_AGENT = "settlement_processor"
+#: CR-01 inserted ``policy_engine`` between compliance and settlement. This routing constant is the
+#: only line of the five original agents that CR-01 touches — no decision logic changed (IN-8).
+NEXT_AGENT = "policy_engine"
 
 #: FinCEN-style Currency Transaction Report threshold — a reporting duty, not a block (spec MO-3).
 CTR_THRESHOLD_USD = Decimal("10000")

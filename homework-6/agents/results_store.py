@@ -34,6 +34,7 @@ def _summarise(record: dict[str, Any]) -> dict[str, Any]:
     fraud = data.get("fraud") or {}
     settlement = data.get("settlement") or {}
     compliance = data.get("compliance") or {}
+    policy = data.get("policy") or {}
     return {
         "transaction_id": str(data.get("transaction_id", "UNKNOWN")),
         "status": str(data.get("status", "unknown")),
@@ -44,8 +45,14 @@ def _summarise(record: dict[str, Any]) -> dict[str, Any]:
         "risk_level": fraud.get("risk_level"),
         "review_required": fraud.get("review_required"),
         "ctr_required": compliance.get("ctr_required"),
-        "hold_reasons": compliance.get("hold_reasons") or [],
+        "hold_reasons": (compliance.get("hold_reasons") or []) + (policy.get("hold_reasons") or []),
         "rejection_reasons": data.get("rejection_reasons") or [],
+        "rule_pack": (policy.get("pack") or {}).get("name"),
+        "priority": policy.get("priority"),
+        "sla_hours": policy.get("sla_hours"),
+        "policy_tags": policy.get("tags") or [],
+        "dual_approval_required": policy.get("dual_approval_required"),
+        "matched_policy_rules": [rule.get("id") for rule in policy.get("matched_rules") or []],
         "settlement_id": settlement.get("settlement_id"),
         "fee": settlement.get("fee"),
         "net_amount": settlement.get("net_amount"),
@@ -53,6 +60,11 @@ def _summarise(record: dict[str, Any]) -> dict[str, Any]:
         "finalised_by": record.get("source_agent"),
         "finalised_at": record.get("timestamp"),
     }
+
+
+def summarise_result(record: dict[str, Any]) -> dict[str, Any]:
+    """Public view of one terminal result message — the shape the MCP server and API both return."""
+    return _summarise(record)
 
 
 def get_transaction_status(
